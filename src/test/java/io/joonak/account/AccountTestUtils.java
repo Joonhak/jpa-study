@@ -18,9 +18,9 @@ class AccountTestUtils {
                 .build();
     }
 
-    static AccountDto.SignUpRequest buildSignUpRequest() {
+    static AccountDto.SignUpRequest buildSignUpRequest(String email) {
         return AccountDto.SignUpRequest.builder()
-                .email("email address")
+                .email(email)
                 .firstName("이름")
                 .lastName("성")
                 .password("qwerty")

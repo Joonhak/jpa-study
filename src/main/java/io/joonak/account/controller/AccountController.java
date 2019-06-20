@@ -1,10 +1,12 @@
-package io.joonak.account.web;
+package io.joonak.account.controller;
 
 import io.joonak.account.dto.AccountDto;
 import io.joonak.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/accounts")
@@ -15,7 +17,7 @@ public class AccountController {
 
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public AccountDto.Response signUp(@RequestBody final AccountDto.SignUpRequest dto) {
+    public AccountDto.Response signUp(@RequestBody @Valid final AccountDto.SignUpRequest dto) {
         return new AccountDto.Response(accountService.create(dto));
     }
 

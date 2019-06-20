@@ -6,17 +6,28 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+
 public class AccountDto {
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class SignUpRequest {
+
+        @Email(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")
         private String email;
+        @NotEmpty
         private String firstName;
+        @NotEmpty
         private String lastName;
+        @NotEmpty
         private String password;
+        @NotEmpty
         private String address;
+        @NotEmpty
         private String detailAddress;
+        @NotEmpty
         private String zipCode;
 
         @Builder
