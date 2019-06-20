@@ -24,7 +24,7 @@ public class AccountController {
         return new AccountDto.Response(accountService.findById(id));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public AccountDto.Response UpdateAddress(@PathVariable final Long id, @RequestBody AccountDto.UpdateAddressRequest dto) {
         return new AccountDto.Response(accountService.updateAddress(id, dto));
     }
