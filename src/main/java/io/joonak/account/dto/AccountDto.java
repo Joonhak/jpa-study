@@ -1,22 +1,23 @@
 package io.joonak.account.dto;
 
 import io.joonak.account.entity.Account;
+import io.joonak.account.entity.Email;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Email;
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
 
 public class AccountDto {
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class SignUpRequest {
-
-        @Email(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")
-        private String email;
+        @Valid
+        private Email email;
         @NotEmpty
         private String firstName;
         @NotEmpty
@@ -31,7 +32,7 @@ public class AccountDto {
         private String zipCode;
 
         @Builder
-        public SignUpRequest(String email, String firstName, String lastName, String password, String address, String detailAddress, String zipCode) {
+        public SignUpRequest(Email email, String firstName, String lastName, String password, String address, String detailAddress, String zipCode) {
             this.email = email;
             this.firstName = firstName;
             this.lastName = lastName;
@@ -71,12 +72,14 @@ public class AccountDto {
 
     @Getter
     public static class Response {
-        private String email;
+        private Email email;
         private String firstName;
         private String lastName;
         private String address;
         private String detailAddress;
         private String zipCode;
+        private LocalDateTime updatedAt;
+        private LocalDateTime createdAt;
 
         public Response(Account account) {
             this.email = account.getEmail();
@@ -85,6 +88,8 @@ public class AccountDto {
             this.address = account.getAddress();
             this.detailAddress = account.getDetailAddress();
             this.zipCode = account.getZipCode();
+            this.updatedAt = account.getUpdatedAt();
+            this.createdAt = account.getCreatedAt();
         }
     }
 

@@ -2,6 +2,8 @@ package io.joonak.account;
 
 import io.joonak.account.dto.AccountDto;
 import io.joonak.account.entity.Account;
+import io.joonak.account.entity.Email;
+import io.joonak.error.ErrorCode;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.Matchers.is;
@@ -18,7 +20,7 @@ class AccountTestUtils {
                 .build();
     }
 
-    static AccountDto.SignUpRequest buildSignUpRequest(String email) {
+    static AccountDto.SignUpRequest buildSignUpRequest(Email email) {
         return AccountDto.SignUpRequest.builder()
                 .email(email)
                 .firstName("이름")
@@ -32,7 +34,7 @@ class AccountTestUtils {
 
     static void assertEqualProperties(ResultActions result, Account account) throws Exception {
         result
-                .andExpect(jsonPath("$.email", is(account.getEmail())))
+                .andExpect(jsonPath("$.email.address", is(account.getEmail().getAddress())))
                 .andExpect(jsonPath("$.firstName", is(account.getFirstName())))
                 .andExpect(jsonPath("$.lastName", is(account.getLastName())))
                 .andExpect(jsonPath("$.address", is(account.getAddress())))
@@ -41,7 +43,7 @@ class AccountTestUtils {
     }
 
     static void assertEqualProperties(AccountDto.SignUpRequest dto, Account account) {
-        assertEquals(dto.getEmail(), account.getEmail());
+        assertEquals(dto.getEmail().getAddress(), account.getEmail().getAddress());
         assertEquals(dto.getFirstName(), account.getFirstName());
         assertEquals(dto.getLastName(), account.getLastName());
         assertEquals(dto.getPassword(), account.getPassword());
@@ -54,6 +56,13 @@ class AccountTestUtils {
         assertEquals(dto.getAddress(), account.getAddress());
         assertEquals(dto.getDetailAddress(), account.getDetailAddress());
         assertEquals(dto.getZipCode(), account.getZipCode());
+    }
+
+    static void assertEqualMessage(ResultActions result, ErrorCode errorCode) throws Exception {
+        result
+                .andExpect(jsonPath("$.message", is(errorCode.getMessage())))
+                .andExpect(jsonPath("$.code", is(errorCode.getCode())))
+                .andExpect(jsonPath("$.status", is(errorCode.getStatus())));
     }
 
 }

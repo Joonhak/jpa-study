@@ -2,6 +2,7 @@ package io.joonak.account.service;
 
 import io.joonak.account.dto.AccountDto;
 import io.joonak.account.entity.Account;
+import io.joonak.account.entity.Email;
 import io.joonak.account.exception.AccountNotFoundException;
 import io.joonak.account.exception.EmailDuplicationException;
 import io.joonak.account.repository.AccountRepository;
@@ -36,7 +37,7 @@ public class AccountService {
     }
 
     @Transactional(readOnly = true)
-    public boolean isExistedEmail(String email) {
+    public boolean isExistedEmail(Email email) {
         return accountRepository.findByEmail(email).isPresent();
     }
 
