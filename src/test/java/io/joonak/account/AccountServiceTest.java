@@ -2,6 +2,7 @@ package io.joonak.account;
 
 import io.joonak.account.dto.AccountDto;
 import io.joonak.account.entity.Account;
+import io.joonak.account.entity.Email;
 import io.joonak.account.exception.AccountNotFoundException;
 import io.joonak.account.exception.EmailDuplicationException;
 import io.joonak.account.repository.AccountRepository;
@@ -18,7 +19,6 @@ import static io.joonak.account.AccountTestUtils.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
@@ -32,7 +32,7 @@ public class AccountServiceTest {
     @Mock
     private AccountRepository accountRepository;
 
-    private AccountDto.SignUpRequest signUpDto = buildSignUpRequest("signUp@dto.com");
+    private AccountDto.SignUpRequest signUpDto = buildSignUpRequest(new Email("signUp@dto.com"));
 
     @Test
     public void 회원가입() {
@@ -51,7 +51,7 @@ public class AccountServiceTest {
     @Test(expected = EmailDuplicationException.class)
     public void 중복된_이메일의_회원가입() {
         //given
-        given(accountRepository.findByEmail(anyString())).willReturn(Optional.of(signUpDto.toEntity()));
+        given(accountRepository.findByEmail(any(Email.class))).willReturn(Optional.of(signUpDto.toEntity()));
 
         //when
         var account = accountService.create(signUpDto);
@@ -102,10 +102,10 @@ public class AccountServiceTest {
     @Test
     public void 존재하는_이메일() {
         //given
-        given(accountRepository.findByEmail(anyString())).willReturn(Optional.of(signUpDto.toEntity()));
+        given(accountRepository.findByEmail(any())).willReturn(Optional.of(signUpDto.toEntity()));
 
         //when
-        var isExist = accountService.isExistedEmail(anyString());
+        var isExist = accountService.isExistedEmail(any());
 
         //then
         assertThat(isExist, is(true));

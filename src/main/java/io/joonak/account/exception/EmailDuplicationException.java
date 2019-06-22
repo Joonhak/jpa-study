@@ -1,14 +1,15 @@
 package io.joonak.account.exception;
 
+import io.joonak.account.entity.Email;
 import lombok.Getter;
 
 @Getter
 public class EmailDuplicationException extends RuntimeException {
 
-    private String email;
+    private Email email;
     private String field;
 
-    public EmailDuplicationException(String email) {
+    public EmailDuplicationException(Email email) {
         this.email = email;
         this.field = "email";
     }

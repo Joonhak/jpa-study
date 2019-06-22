@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.joonak.account.controller.AccountController;
 import io.joonak.account.dto.AccountDto;
 import io.joonak.account.entity.Account;
+import io.joonak.account.entity.Email;
 import io.joonak.account.exception.EmailDuplicationException;
 import io.joonak.account.service.AccountService;
 import io.joonak.error.ErrorCode;
@@ -42,7 +43,7 @@ public class AccountControllerTest {
 
     private MockMvc mvc;
 
-    private AccountDto.SignUpRequest signUpDto = buildSignUpRequest("sign_up@dto.com");
+    private AccountDto.SignUpRequest signUpDto = buildSignUpRequest(new Email("sign_up@dto.com"));
 
     @Before
     public void setUp() {
@@ -69,7 +70,7 @@ public class AccountControllerTest {
     @Test
     public void 유효하지_않은_이메일의_회원가입() throws Exception {
         //given
-        var dto = buildSignUpRequest("invalid.com");
+        var dto = buildSignUpRequest(new Email("invalid.com"));
 
         //when
         var result = requestSignUp(dto);
@@ -77,11 +78,9 @@ public class AccountControllerTest {
         //then
         result
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is(ErrorCode.INPUT_VALUE_INVALID.getMessage())))
-                .andExpect(jsonPath("$.code", is(ErrorCode.INPUT_VALUE_INVALID.getCode())))
-                .andExpect(jsonPath("$.status", is(ErrorCode.INPUT_VALUE_INVALID.getStatus())))
-                .andExpect(jsonPath("$.errors[0].field", is("email")))
-                .andExpect(jsonPath("$.errors[0].value", is(dto.getEmail())));
+                .andExpect(jsonPath("$.errors[0].field", is("email.address")))
+                .andExpect(jsonPath("$.errors[0].value", is(dto.getEmail().getAddress())));
+        assertEqualMessage(result, ErrorCode.INPUT_VALUE_INVALID);
     }
 
     @Test
@@ -94,10 +93,8 @@ public class AccountControllerTest {
 
         //then
         result
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is(ErrorCode.EMAIL_DUPLICATION.getMessage())))
-                .andExpect(jsonPath("$.code", is(ErrorCode.EMAIL_DUPLICATION.getCode())))
-                .andExpect(jsonPath("$.status", is(ErrorCode.EMAIL_DUPLICATION.getStatus())));
+                .andExpect(status().isBadRequest());
+        assertEqualMessage(result, ErrorCode.EMAIL_DUPLICATION);
     }
 
     @Test
@@ -110,10 +107,8 @@ public class AccountControllerTest {
 
         //then
         result
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is(ErrorCode.KEY_DUPLICATION.getMessage())))
-                .andExpect(jsonPath("$.code", is(ErrorCode.KEY_DUPLICATION.getCode())))
-                .andExpect(jsonPath("$.status", is(ErrorCode.KEY_DUPLICATION.getStatus())));
+                .andExpect(status().isBadRequest());
+        assertEqualMessage(result, ErrorCode.KEY_DUPLICATION);
     }
 
     @Test
