@@ -6,7 +6,9 @@ import io.joonak.account.entity.Email;
 import io.joonak.account.exception.AccountNotFoundException;
 import io.joonak.account.exception.EmailDuplicationException;
 import io.joonak.account.repository.AccountRepository;
-import io.joonak.account.service.AccountService;
+import io.joonak.account.service.LoadAccountService;
+import io.joonak.account.service.SaveAccountService;
+import io.joonak.account.service.UpdateAccountService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -24,10 +26,14 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AccountServiceTest {
+public class SaveAccountServiceTest {
 
     @InjectMocks
-    private AccountService accountService;
+    private SaveAccountService saveAccountService;
+    @InjectMocks
+    private UpdateAccountService updateAccountService;
+    @InjectMocks
+    private LoadAccountService loadAccountService;
 
     @Mock
     private AccountRepository accountRepository;
@@ -40,7 +46,7 @@ public class AccountServiceTest {
         given(accountRepository.save(any(Account.class))).willReturn(signUpDto.toEntity());
 
         //when
-        var account = accountService.create(signUpDto);
+        var account = saveAccountService.create(signUpDto);
 
         //then
         verify(accountRepository, atLeastOnce()).save(any(Account.class));
@@ -54,7 +60,7 @@ public class AccountServiceTest {
         given(accountRepository.findByEmail(any(Email.class))).willReturn(Optional.of(signUpDto.toEntity()));
 
         //when
-        var account = accountService.create(signUpDto);
+        var account = saveAccountService.create(signUpDto);
 
         //then
         assertThat(account, is(Optional.empty()));
@@ -66,7 +72,7 @@ public class AccountServiceTest {
         given(accountRepository.findById(any(Long.class))).willReturn(Optional.of(signUpDto.toEntity()));
 
         //when
-        var account = accountService.findById(any(Long.class));
+        var account = loadAccountService.findById(any(Long.class));
 
         //then
         verify(accountRepository, atLeastOnce()).findById(any(Long.class));
@@ -80,7 +86,7 @@ public class AccountServiceTest {
         given(accountRepository.findById(any(Long.class))).willReturn(Optional.empty());
 
         //when
-        var account = accountService.findById(any(Long.class));
+        var account = loadAccountService.findById(any(Long.class));
 
         //then
         assertThat(account, is(Optional.empty()));
@@ -93,7 +99,7 @@ public class AccountServiceTest {
         given(accountRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(signUpDto.toEntity()));
 
         //when
-        var account = accountService.updateAddress(any(Long.class), updateDto);
+        var account = updateAccountService.updateAddress(any(Long.class), updateDto);
 
         //then
         assertEqualAddress(updateDto, account);
@@ -105,7 +111,7 @@ public class AccountServiceTest {
         given(accountRepository.findByEmail(any())).willReturn(Optional.of(signUpDto.toEntity()));
 
         //when
-        var isExist = accountService.isExistedEmail(any());
+        var isExist = saveAccountService.isExistedEmail(any());
 
         //then
         assertThat(isExist, is(true));
