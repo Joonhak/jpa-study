@@ -1,12 +1,16 @@
 package io.joonak.account;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.joonak.account.controller.AccountController;
+import io.joonak.account.controller.LoadAccountController;
+import io.joonak.account.controller.SaveAccountController;
+import io.joonak.account.controller.UpdateAccountController;
 import io.joonak.account.dto.AccountDto;
 import io.joonak.account.entity.Account;
 import io.joonak.account.entity.Email;
 import io.joonak.account.exception.EmailDuplicationException;
-import io.joonak.account.service.AccountService;
+import io.joonak.account.service.LoadAccountService;
+import io.joonak.account.service.SaveAccountService;
+import io.joonak.account.service.UpdateAccountService;
 import io.joonak.error.ErrorCode;
 import io.joonak.error.ErrorHandler;
 import org.junit.Before;
@@ -31,13 +35,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AccountControllerTest {
+public class UpdateAccountControllerTest {
 
     @InjectMocks
-    private AccountController accountController;
+    private SaveAccountController saveAccountController;
+    @InjectMocks
+    private LoadAccountController loadAccountController;
+    @InjectMocks
+    private UpdateAccountController updateAccountController;
 
     @Mock
-    private AccountService accountService;
+    private SaveAccountService saveAccountService;
+
+    @Mock
+    private LoadAccountService loadAccountService;
+
+    @Mock
+    private UpdateAccountService updateAccountService;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -48,7 +62,7 @@ public class AccountControllerTest {
     @Before
     public void setUp() {
         mvc = MockMvcBuilders
-                .standaloneSetup(accountController)
+                .standaloneSetup(updateAccountController, loadAccountController, saveAccountController)
                 .setControllerAdvice(new ErrorHandler())
                 .build();
     }
@@ -56,7 +70,7 @@ public class AccountControllerTest {
     @Test
     public void 유효한_이메일의_회원가입() throws Exception {
         //given
-        given(accountService.create(any(AccountDto.SignUpRequest.class))).willReturn(signUpDto.toEntity());
+        given(saveAccountService.create(any(AccountDto.SignUpRequest.class))).willReturn(signUpDto.toEntity());
 
         //when
         var result = requestSignUp(signUpDto);
@@ -86,7 +100,7 @@ public class AccountControllerTest {
     @Test
     public void 중복된_이메일의_회원가입() throws Exception {
         //given
-        given(accountService.create(any())).willThrow(EmailDuplicationException.class);
+        given(saveAccountService.create(any())).willThrow(EmailDuplicationException.class);
 
         //when
         var result = requestSignUp(signUpDto);
@@ -100,7 +114,7 @@ public class AccountControllerTest {
     @Test
     public void 데이터_무결성_위반() throws Exception {
         //given
-        given(accountService.create(any())).willThrow(DataIntegrityViolationException.class);
+        given(saveAccountService.create(any())).willThrow(DataIntegrityViolationException.class);
 
         //when
         var result = requestSignUp(signUpDto);
@@ -114,7 +128,7 @@ public class AccountControllerTest {
     @Test
     public void 계정정보() throws Exception {
         //given
-        given(accountService.findById(any(Long.class))).willReturn(signUpDto.toEntity());
+        given(loadAccountService.findById(any(Long.class))).willReturn(signUpDto.toEntity());
 
         //when
         var result = requestGetAccount();
@@ -134,7 +148,7 @@ public class AccountControllerTest {
                 .detailAddress(dto.getDetailAddress())
                 .zipCode(dto.getZipCode())
                 .build();
-        given(accountService.updateAddress(any(Long.class), any(AccountDto.UpdateAddressRequest.class))).willReturn(account);
+        given(updateAccountService.updateAddress(any(Long.class), any(AccountDto.UpdateAddressRequest.class))).willReturn(account);
 
         //when
         var result = requestAddressUpdate(dto);

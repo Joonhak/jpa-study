@@ -4,23 +4,26 @@ import io.joonak.account.dto.AccountDto;
 import io.joonak.account.entity.Account;
 import io.joonak.account.entity.Email;
 import io.joonak.account.exception.AccountNotFoundException;
-import io.joonak.account.exception.EmailDuplicationException;
 import io.joonak.account.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
-public class AccountService {
+public class LoadAccountService implements UserDetailsService {
 
     private final AccountRepository accountRepository;
 
-    public Account create(AccountDto.SignUpRequest dto) {
-        if (isExistedEmail(dto.getEmail()))
-            throw new EmailDuplicationException(dto.getEmail());
-        return accountRepository.save(dto.toEntity());
+    @Override
+    public UserDetails loadUserByUsername(String address) throws UsernameNotFoundException {
+        var email = Email.builder().address(address).build();
+        return accountRepository.findByEmail(email)
+                .map(AccountDto.SecurityAccount::new)
+                .orElseThrow(() -> new UsernameNotFoundException("Can not found user. username: " + address ));
     }
 
     @Transactional(readOnly = true)
@@ -28,17 +31,6 @@ public class AccountService {
         return accountRepository
                 .findById(id)
                 .orElseThrow(() -> new AccountNotFoundException(id));
-    }
-
-    public Account updateAddress(Long id, AccountDto.UpdateAddressRequest dto) {
-        final Account account = findById(id);
-        account.updateAddress(dto);
-        return account;
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isExistedEmail(Email email) {
-        return accountRepository.findByEmail(email).isPresent();
     }
 
 }

@@ -10,6 +10,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -30,8 +32,8 @@ public class Account {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+    @Embedded
+    private Password password;
 
     @Column(name = "address", nullable = false)
     private String address;
@@ -42,6 +44,14 @@ public class Account {
     @Column(name = "zip_code", nullable = false)
     private String zipCode;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "account_roles"
+            , joinColumns = @JoinColumn(name = "account_id")
+            , inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
     @Column(name = "updated_at")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
@@ -51,7 +61,7 @@ public class Account {
     private LocalDateTime createdAt;
 
     @Builder
-    public Account(Email email, String firstName, String lastName, String password, String address, String detailAddress, String zipCode) {
+    public Account(Email email, String firstName, String lastName, Password password, String address, String detailAddress, String zipCode) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -65,6 +75,18 @@ public class Account {
         this.address = dto.getAddress();
         this.detailAddress = dto.getDetailAddress();
         this.zipCode = dto.getZipCode();
+    }
+
+    public Account setRole(Role role) {
+        role.setAccount(this);
+        getRoles().add(role);
+        return this;
+    }
+
+    public Account setRoles(Set<Role> roles) {
+        roles.forEach(r -> r.setAccount(this));
+        getRoles().addAll(roles);
+        return this;
     }
 
 }

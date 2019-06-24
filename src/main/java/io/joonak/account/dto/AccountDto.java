@@ -2,14 +2,22 @@ package io.joonak.account.dto;
 
 import io.joonak.account.entity.Account;
 import io.joonak.account.entity.Email;
+import io.joonak.account.entity.Password;
+import io.joonak.account.entity.Role;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class AccountDto {
 
@@ -47,7 +55,7 @@ public class AccountDto {
                     .email(this.email)
                     .firstName(this.firstName)
                     .lastName(this.lastName)
-                    .password(this.password)
+                    .password(new Password(this.password))
                     .address(this.address)
                     .detailAddress(this.detailAddress)
                     .zipCode(this.zipCode)
@@ -93,4 +101,21 @@ public class AccountDto {
         }
     }
 
+    @Getter
+    public static class SecurityAccount extends User {
+        private Account account;
+
+        private static final String ROLE_PREFIX = "ROLE_";
+
+        public SecurityAccount(Account account) {
+            super(account.getEmail().getAddress(), account.getPassword().getValue(), getAuthorities(account.getRoles()));
+            this.account = account;
+        }
+
+        private static Collection<? extends GrantedAuthority> getAuthorities(Set<Role> roles) {
+            return roles.stream()
+                    .map(r -> new SimpleGrantedAuthority(ROLE_PREFIX + r.getName()))
+                    .collect(Collectors.toList());
+        }
+    }
 }
