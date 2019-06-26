@@ -8,6 +8,7 @@ import io.joonak.account.exception.EmailDuplicationException;
 import io.joonak.account.repository.AccountRepository;
 import io.joonak.account.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import static io.joonak.account.constants.RoleId.ROLE_BASIC_ID;
 @RequiredArgsConstructor
 public class SaveAccountService {
 
+    private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
 
@@ -39,6 +41,7 @@ public class SaveAccountService {
     public Account create(AccountDto.SignUpRequest dto) {
         if (isExistedEmail(dto.getEmail()))
             throw new EmailDuplicationException(dto.getEmail());
+        dto.encodePassword(passwordEncoder);
         var entity = dto.toEntity().setRole(roleRepository.getOne(ROLE_BASIC_ID.getId()));
         return accountRepository.save(entity);
     }

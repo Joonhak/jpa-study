@@ -7,23 +7,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.Serializable;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Role {
+public class Role implements Serializable {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "roles")
-    private Set<Account> accounts = new HashSet<>();
+//    @ManyToMany(mappedBy = "roles")
+//    private Set<Account> accounts = new HashSet<>();
 
     @Builder
     public Role(RoleId role) {
@@ -31,16 +30,14 @@ public class Role {
         this.name = role.getName();
     }
 
-    public Role setAccount(Account account) {
-        account.setRole(this);
-        getAccounts().add(account);
-        return this;
-    }
-
-    public Role setAccounts(Set<Account> accounts) {
-        accounts.forEach(a -> a.setRole(this));
-        getAccounts().addAll(accounts);
-        return this;
-    }
+//    public Role setAccount(Account account) {
+//        getAccounts().add(account);
+//        return this;
+//    }
+//
+//    public Role setAccounts(Set<Account> accounts) {
+//        getAccounts().addAll(accounts);
+//        return this;
+//    }
 
 }

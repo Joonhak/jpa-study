@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -35,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UpdateAccountControllerTest {
+public class AccountControllerTest {
 
     @InjectMocks
     private SaveAccountController saveAccountController;
@@ -46,12 +47,12 @@ public class UpdateAccountControllerTest {
 
     @Mock
     private SaveAccountService saveAccountService;
-
     @Mock
     private LoadAccountService loadAccountService;
-
     @Mock
     private UpdateAccountService updateAccountService;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -162,7 +163,7 @@ public class UpdateAccountControllerTest {
     }
 
     private ResultActions requestSignUp(AccountDto.SignUpRequest dto) throws Exception {
-        return mvc.perform(post("/accounts")
+        return mvc.perform(post("/account")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(dto)))
                 .andDo(print());

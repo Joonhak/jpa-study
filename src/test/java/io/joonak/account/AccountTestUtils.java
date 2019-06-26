@@ -46,7 +46,6 @@ class AccountTestUtils {
         assertEquals(dto.getEmail().getAddress(), account.getEmail().getAddress());
         assertEquals(dto.getFirstName(), account.getFirstName());
         assertEquals(dto.getLastName(), account.getLastName());
-        assertEquals(dto.getPassword(), account.getPassword());
         assertEquals(dto.getAddress(), account.getAddress());
         assertEquals(dto.getDetailAddress(), account.getDetailAddress());
         assertEquals(dto.getZipCode(), account.getZipCode());

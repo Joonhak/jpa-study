@@ -3,21 +3,27 @@ package io.joonak.account;
 import io.joonak.account.dto.AccountDto;
 import io.joonak.account.entity.Account;
 import io.joonak.account.entity.Email;
+import io.joonak.account.entity.Role;
 import io.joonak.account.exception.AccountNotFoundException;
 import io.joonak.account.exception.EmailDuplicationException;
 import io.joonak.account.repository.AccountRepository;
+import io.joonak.account.repository.RoleRepository;
 import io.joonak.account.service.LoadAccountService;
 import io.joonak.account.service.SaveAccountService;
 import io.joonak.account.service.UpdateAccountService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
 import static io.joonak.account.AccountTestUtils.*;
+import static io.joonak.account.constants.RoleId.ROLE_BASIC_ID;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,7 +32,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SaveAccountServiceTest {
+public class AccountServiceTest {
 
     @InjectMocks
     private SaveAccountService saveAccountService;
@@ -37,12 +43,17 @@ public class SaveAccountServiceTest {
 
     @Mock
     private AccountRepository accountRepository;
+    @Mock
+    private RoleRepository roleRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     private AccountDto.SignUpRequest signUpDto = buildSignUpRequest(new Email("signUp@dto.com"));
 
     @Test
     public void 회원가입() {
         //given
+        given(roleRepository.getOne(ROLE_BASIC_ID.getId())).willReturn(Role.builder().role(ROLE_BASIC_ID).build());
         given(accountRepository.save(any(Account.class))).willReturn(signUpDto.toEntity());
 
         //when
