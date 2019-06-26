@@ -23,7 +23,10 @@ public class LoadAccountService implements UserDetailsService {
         var email = Email.builder().address(address).build();
         return accountRepository.findByEmail(email)
                 .map(AccountDto.SecurityAccount::new)
-                .orElseThrow(() -> new UsernameNotFoundException("Can not found user. username: " + address ));
+                .orElseThrow(() -> {
+                    System.out.println("USERNAME NOT FOUND EXCEPTION");
+                    return new UsernameNotFoundException("Can not found user. username: " + address );
+                });
     }
 
     @Transactional(readOnly = true)

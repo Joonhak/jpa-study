@@ -7,10 +7,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum RoleId {
 
-    ROLE_ADMIN_ID(1L, "ADMIN"),
-    ROLE_BASIC_ID(2L, "BASIC");
+    ROLE_ADMIN_ID(1, "ADMIN"),
+    ROLE_BASIC_ID(2, "BASIC");
 
-    private Long id;
+    private Integer id;
     private String name;
 
 }

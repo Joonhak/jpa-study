@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -48,6 +50,14 @@ public class AccountDto {
             this.address = address;
             this.detailAddress = detailAddress;
             this.zipCode = zipCode;
+        }
+
+        public boolean encodePassword(PasswordEncoder passwordEncoder) {
+            if (!StringUtils.isEmpty(this.password)) {
+                this.password = passwordEncoder.encode(this.password);
+                return true;
+            }
+            return false;
         }
 
         public Account toEntity() {
@@ -110,6 +120,10 @@ public class AccountDto {
         public SecurityAccount(Account account) {
             super(account.getEmail().getAddress(), account.getPassword().getValue(), getAuthorities(account.getRoles()));
             this.account = account;
+        }
+
+        public Account getAccount() {
+            return account;
         }
 
         private static Collection<? extends GrantedAuthority> getAuthorities(Set<Role> roles) {

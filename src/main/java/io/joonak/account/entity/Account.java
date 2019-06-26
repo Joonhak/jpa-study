@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,11 +17,12 @@ import java.util.Set;
 @Entity
 @Getter
 @Table(name= "account")
+@NamedEntityGraph(name = "AccountWithRoles", attributeNodes = @NamedAttributeNode("roles"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Account {
+public class Account implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Embedded
@@ -47,8 +49,8 @@ public class Account {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "account_roles"
-            , joinColumns = @JoinColumn(name = "account_id")
-            , inverseJoinColumns = @JoinColumn(name = "role_id")
+            , joinColumns = { @JoinColumn(name = "account_id") }
+            , inverseJoinColumns = { @JoinColumn(name = "role_id") }
     )
     private Set<Role> roles = new HashSet<>();
 
@@ -78,13 +80,13 @@ public class Account {
     }
 
     public Account setRole(Role role) {
-        role.setAccount(this);
+//        role.setAccount(this);
         getRoles().add(role);
         return this;
     }
 
     public Account setRoles(Set<Role> roles) {
-        roles.forEach(r -> r.setAccount(this));
+//        roles.forEach(r -> r.setAccount(this));
         getRoles().addAll(roles);
         return this;
     }
