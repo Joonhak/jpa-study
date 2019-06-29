@@ -10,6 +10,7 @@ public enum ErrorCode {
     // Account
     ACCOUNT_NOT_FOUND("AE-01", "해당 계정을 찾을 수 없습니다.", 404),
     EMAIL_DUPLICATION("AE-02", "이메일이 이미 존재합니다.", 400),
+    PASSWORD_FAILED_EXCEEDED("AE-03", "비밀번호 실패 횟수가 초과하였습니다.", 400),
 
     // Validation
     INPUT_VALUE_INVALID("VE-01", "올바른 형식으로 입력해주세요.", 400),

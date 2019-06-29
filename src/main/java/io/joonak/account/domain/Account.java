@@ -1,10 +1,7 @@
-package io.joonak.account.entity;
+package io.joonak.account.domain;
 
 import io.joonak.account.dto.AccountDto;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,8 +13,8 @@ import java.util.Set;
 
 @Entity
 @Getter
+@ToString
 @Table(name= "account")
-@NamedEntityGraph(name = "AccountWithRoles", attributeNodes = @NamedAttributeNode("roles"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Account implements Serializable {
 
@@ -46,14 +43,6 @@ public class Account implements Serializable {
     @Column(name = "zip_code", nullable = false)
     private String zipCode;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "account_roles"
-            , joinColumns = { @JoinColumn(name = "account_id") }
-            , inverseJoinColumns = { @JoinColumn(name = "role_id") }
-    )
-    private Set<Role> roles = new HashSet<>();
-
     @Column(name = "updated_at")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
@@ -77,18 +66,6 @@ public class Account implements Serializable {
         this.address = dto.getAddress();
         this.detailAddress = dto.getDetailAddress();
         this.zipCode = dto.getZipCode();
-    }
-
-    public Account setRole(Role role) {
-//        role.setAccount(this);
-        getRoles().add(role);
-        return this;
-    }
-
-    public Account setRoles(Set<Role> roles) {
-//        roles.forEach(r -> r.setAccount(this));
-        getRoles().addAll(roles);
-        return this;
     }
 
 }

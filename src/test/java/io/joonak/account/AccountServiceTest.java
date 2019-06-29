@@ -1,29 +1,24 @@
 package io.joonak.account;
 
 import io.joonak.account.dto.AccountDto;
-import io.joonak.account.entity.Account;
-import io.joonak.account.entity.Email;
-import io.joonak.account.entity.Role;
+import io.joonak.account.domain.Account;
+import io.joonak.account.domain.Email;
 import io.joonak.account.exception.AccountNotFoundException;
 import io.joonak.account.exception.EmailDuplicationException;
 import io.joonak.account.repository.AccountRepository;
-import io.joonak.account.repository.RoleRepository;
 import io.joonak.account.service.LoadAccountService;
 import io.joonak.account.service.SaveAccountService;
 import io.joonak.account.service.UpdateAccountService;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
 import static io.joonak.account.AccountTestUtils.*;
-import static io.joonak.account.constants.RoleId.ROLE_BASIC_ID;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,17 +38,12 @@ public class AccountServiceTest {
 
     @Mock
     private AccountRepository accountRepository;
-    @Mock
-    private RoleRepository roleRepository;
-    @Mock
-    private PasswordEncoder passwordEncoder;
 
-    private AccountDto.SignUpRequest signUpDto = buildSignUpRequest(new Email("signUp@dto.com"));
+    private AccountDto.SignUpRequest signUpDto = buildSignUpRequest(Email.builder().address("sign_up@dto.com").build());
 
     @Test
     public void 회원가입() {
         //given
-        given(roleRepository.getOne(ROLE_BASIC_ID.getId())).willReturn(Role.builder().role(ROLE_BASIC_ID).build());
         given(accountRepository.save(any(Account.class))).willReturn(signUpDto.toEntity());
 
         //when
@@ -68,7 +58,7 @@ public class AccountServiceTest {
     @Test(expected = EmailDuplicationException.class)
     public void 중복된_이메일의_회원가입() {
         //given
-        given(accountRepository.findByEmail(any(Email.class))).willReturn(Optional.of(signUpDto.toEntity()));
+        given(accountRepository.existsByEmail(any(Email.class))).willReturn(true);
 
         //when
         var account = saveAccountService.create(signUpDto);
@@ -119,7 +109,7 @@ public class AccountServiceTest {
     @Test
     public void 존재하는_이메일() {
         //given
-        given(accountRepository.findByEmail(any())).willReturn(Optional.of(signUpDto.toEntity()));
+        given(accountRepository.existsByEmail(any())).willReturn(true);
 
         //when
         var isExist = saveAccountService.isExistedEmail(any());

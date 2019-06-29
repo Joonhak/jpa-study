@@ -1,12 +1,12 @@
-package io.joonak.account.controller;
+package io.joonak.account.api;
 
 import io.joonak.account.dto.AccountDto;
 import io.joonak.account.service.LoadAccountService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor

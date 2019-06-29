@@ -1,8 +1,8 @@
 package io.joonak.account;
 
 import io.joonak.account.dto.AccountDto;
-import io.joonak.account.entity.Account;
-import io.joonak.account.entity.Email;
+import io.joonak.account.domain.Account;
+import io.joonak.account.domain.Email;
 import io.joonak.error.ErrorCode;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -34,7 +34,7 @@ class AccountTestUtils {
 
     static void assertEqualProperties(ResultActions result, Account account) throws Exception {
         result
-                .andExpect(jsonPath("$.email.address", is(account.getEmail().getAddress())))
+                .andExpect(jsonPath("$.email", is(account.getEmail().getAddress())))
                 .andExpect(jsonPath("$.firstName", is(account.getFirstName())))
                 .andExpect(jsonPath("$.lastName", is(account.getLastName())))
                 .andExpect(jsonPath("$.address", is(account.getAddress())))
