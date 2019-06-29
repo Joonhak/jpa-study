@@ -46,17 +46,17 @@ public class ErrorHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-        log.error(exception.getMessage());
-        final var bindingResult = exception.getBindingResult();
+    protected ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error(e.getMessage());
+        final var bindingResult = e.getBindingResult();
         final List<FieldError> errors = bindingResult.getFieldErrors();
         return bindErrorWithFieldErrors(
                 ErrorCode.INPUT_VALUE_INVALID
                 , errors.parallelStream()
-                        .map(e -> ErrorResponse.FieldError.builder()
-                                .field(e.getField())
-                                .value((String) e.getRejectedValue())
-                                .reason(e.getDefaultMessage())
+                        .map(err -> ErrorResponse.FieldError.builder()
+                                .field(err.getField())
+                                .value((String) err.getRejectedValue())
+                                .reason(err.getDefaultMessage())
                                 .build())
                         .collect(Collectors.toList())
         );

@@ -1,12 +1,12 @@
 package io.joonak.account;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.joonak.account.controller.LoadAccountController;
-import io.joonak.account.controller.SaveAccountController;
-import io.joonak.account.controller.UpdateAccountController;
+import io.joonak.account.api.LoadAccountController;
+import io.joonak.account.api.SaveAccountController;
+import io.joonak.account.api.UpdateAccountController;
+import io.joonak.account.domain.Account;
+import io.joonak.account.domain.Email;
 import io.joonak.account.dto.AccountDto;
-import io.joonak.account.entity.Account;
-import io.joonak.account.entity.Email;
 import io.joonak.account.exception.EmailDuplicationException;
 import io.joonak.account.service.LoadAccountService;
 import io.joonak.account.service.SaveAccountService;
@@ -51,14 +51,12 @@ public class AccountControllerTest {
     private LoadAccountService loadAccountService;
     @Mock
     private UpdateAccountService updateAccountService;
-    @Mock
-    private PasswordEncoder passwordEncoder;
 
     private ObjectMapper mapper = new ObjectMapper();
 
     private MockMvc mvc;
 
-    private AccountDto.SignUpRequest signUpDto = buildSignUpRequest(new Email("sign_up@dto.com"));
+    private AccountDto.SignUpRequest signUpDto = buildSignUpRequest(Email.builder().address("sign_up@dto.com").build());
 
     @Before
     public void setUp() {
@@ -85,7 +83,7 @@ public class AccountControllerTest {
     @Test
     public void 유효하지_않은_이메일의_회원가입() throws Exception {
         //given
-        var dto = buildSignUpRequest(new Email("invalid.com"));
+        var dto = buildSignUpRequest(Email.builder().address("invalid.com").build());
 
         //when
         var result = requestSignUp(dto);
@@ -145,6 +143,7 @@ public class AccountControllerTest {
         //given
         var dto = buildUpdateRequest();
         var account = Account.builder()
+                .email(Email.builder().address("sign_up@dto.com").build())
                 .address(dto.getAddress())
                 .detailAddress(dto.getDetailAddress())
                 .zipCode(dto.getZipCode())

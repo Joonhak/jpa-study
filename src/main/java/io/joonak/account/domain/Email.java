@@ -1,4 +1,4 @@
-package io.joonak.account.entity;
+package io.joonak.account.domain;
 
 import lombok.AccessLevel;
 import lombok.Builder;

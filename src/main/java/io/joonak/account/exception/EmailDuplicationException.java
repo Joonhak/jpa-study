@@ -1,6 +1,6 @@
 package io.joonak.account.exception;
 
-import io.joonak.account.entity.Email;
+import io.joonak.account.domain.Email;
 import lombok.Getter;
 
 @Getter

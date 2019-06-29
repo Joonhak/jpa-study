@@ -1,7 +1,7 @@
 package io.joonak.account.service;
 
 import io.joonak.account.dto.AccountDto;
-import io.joonak.account.entity.Account;
+import io.joonak.account.domain.Account;
 import io.joonak.account.exception.AccountNotFoundException;
 import io.joonak.account.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +17,7 @@ public class UpdateAccountService {
         final Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new AccountNotFoundException(id));
         account.updateAddress(dto);
+        System.out.println(account);
         return account;
     }
 

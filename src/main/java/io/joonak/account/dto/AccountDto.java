@@ -1,25 +1,18 @@
 package io.joonak.account.dto;
 
-import io.joonak.account.entity.Account;
-import io.joonak.account.entity.Email;
-import io.joonak.account.entity.Password;
-import io.joonak.account.entity.Role;
+import io.joonak.account.domain.Account;
+import io.joonak.account.domain.Email;
+import io.joonak.account.domain.Password;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class AccountDto {
 
@@ -52,20 +45,12 @@ public class AccountDto {
             this.zipCode = zipCode;
         }
 
-        public boolean encodePassword(PasswordEncoder passwordEncoder) {
-            if (!StringUtils.isEmpty(this.password)) {
-                this.password = passwordEncoder.encode(this.password);
-                return true;
-            }
-            return false;
-        }
-
         public Account toEntity() {
             return Account.builder()
                     .email(this.email)
                     .firstName(this.firstName)
                     .lastName(this.lastName)
-                    .password(new Password(this.password))
+                    .password(Password.builder().value(this.password).build())
                     .address(this.address)
                     .detailAddress(this.detailAddress)
                     .zipCode(this.zipCode)
@@ -90,7 +75,7 @@ public class AccountDto {
 
     @Getter
     public static class Response {
-        private Email email;
+        private String email;
         private String firstName;
         private String lastName;
         private String address;
@@ -100,7 +85,7 @@ public class AccountDto {
         private LocalDateTime createdAt;
 
         public Response(Account account) {
-            this.email = account.getEmail();
+            this.email = account.getEmail().getAddress();
             this.firstName = account.getFirstName();
             this.lastName = account.getLastName();
             this.address = account.getAddress();
@@ -111,25 +96,4 @@ public class AccountDto {
         }
     }
 
-    @Getter
-    public static class SecurityAccount extends User {
-        private Account account;
-
-        private static final String ROLE_PREFIX = "ROLE_";
-
-        public SecurityAccount(Account account) {
-            super(account.getEmail().getAddress(), account.getPassword().getValue(), getAuthorities(account.getRoles()));
-            this.account = account;
-        }
-
-        public Account getAccount() {
-            return account;
-        }
-
-        private static Collection<? extends GrantedAuthority> getAuthorities(Set<Role> roles) {
-            return roles.stream()
-                    .map(r -> new SimpleGrantedAuthority(ROLE_PREFIX + r.getName()))
-                    .collect(Collectors.toList());
-        }
-    }
 }

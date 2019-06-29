@@ -1,4 +1,4 @@
-package io.joonak.account.controller;
+package io.joonak.account.api;
 
 import io.joonak.account.dto.AccountDto;
 import io.joonak.account.service.UpdateAccountService;
