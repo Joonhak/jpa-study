@@ -1,16 +1,12 @@
 package io.joonak.account;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.joonak.account.api.LoadAccountController;
-import io.joonak.account.api.SaveAccountController;
-import io.joonak.account.api.UpdateAccountController;
+import io.joonak.account.api.AccountController;
 import io.joonak.account.domain.Account;
 import io.joonak.account.domain.Email;
 import io.joonak.account.dto.AccountDto;
 import io.joonak.account.exception.EmailDuplicationException;
-import io.joonak.account.service.LoadAccountService;
-import io.joonak.account.service.SaveAccountService;
-import io.joonak.account.service.UpdateAccountService;
+import io.joonak.account.service.AccountService;
 import io.joonak.error.ErrorCode;
 import io.joonak.error.ErrorHandler;
 import org.junit.Before;
@@ -21,12 +17,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static io.joonak.account.AccountTestUtils.*;
+import static io.joonak.utils.TestUtils.*;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -39,18 +34,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AccountControllerTest {
 
     @InjectMocks
-    private SaveAccountController saveAccountController;
-    @InjectMocks
-    private LoadAccountController loadAccountController;
-    @InjectMocks
-    private UpdateAccountController updateAccountController;
+    private AccountController accountController;
 
     @Mock
-    private SaveAccountService saveAccountService;
-    @Mock
-    private LoadAccountService loadAccountService;
-    @Mock
-    private UpdateAccountService updateAccountService;
+    private AccountService accountService;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -61,7 +48,7 @@ public class AccountControllerTest {
     @Before
     public void setUp() {
         mvc = MockMvcBuilders
-                .standaloneSetup(updateAccountController, loadAccountController, saveAccountController)
+                .standaloneSetup(accountController)
                 .setControllerAdvice(new ErrorHandler())
                 .build();
     }
@@ -69,7 +56,7 @@ public class AccountControllerTest {
     @Test
     public void 유효한_이메일의_회원가입() throws Exception {
         //given
-        given(saveAccountService.create(any(AccountDto.SignUpRequest.class))).willReturn(signUpDto.toEntity());
+        given(accountService.create(any(AccountDto.SignUpRequest.class))).willReturn(signUpDto.toEntity());
 
         //when
         var result = requestSignUp(signUpDto);
@@ -77,7 +64,7 @@ public class AccountControllerTest {
         //then
         result
                 .andExpect(status().isCreated());
-        assertEqualProperties(result, signUpDto.toEntity());
+        assertEqualAccount(result, signUpDto.toEntity());
     }
 
     @Test
@@ -93,13 +80,13 @@ public class AccountControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field", is("email.address")))
                 .andExpect(jsonPath("$.errors[0].value", is(dto.getEmail().getAddress())));
-        assertEqualMessage(result, ErrorCode.INPUT_VALUE_INVALID);
+        assertEqualErrorMessage(result, ErrorCode.INPUT_VALUE_INVALID);
     }
 
     @Test
     public void 중복된_이메일의_회원가입() throws Exception {
         //given
-        given(saveAccountService.create(any())).willThrow(EmailDuplicationException.class);
+        given(accountService.create(any())).willThrow(EmailDuplicationException.class);
 
         //when
         var result = requestSignUp(signUpDto);
@@ -107,13 +94,13 @@ public class AccountControllerTest {
         //then
         result
                 .andExpect(status().isBadRequest());
-        assertEqualMessage(result, ErrorCode.EMAIL_DUPLICATION);
+        assertEqualErrorMessage(result, ErrorCode.EMAIL_DUPLICATION);
     }
 
     @Test
     public void 데이터_무결성_위반() throws Exception {
         //given
-        given(saveAccountService.create(any())).willThrow(DataIntegrityViolationException.class);
+        given(accountService.create(any())).willThrow(DataIntegrityViolationException.class);
 
         //when
         var result = requestSignUp(signUpDto);
@@ -121,13 +108,13 @@ public class AccountControllerTest {
         //then
         result
                 .andExpect(status().isBadRequest());
-        assertEqualMessage(result, ErrorCode.KEY_DUPLICATION);
+        assertEqualErrorMessage(result, ErrorCode.KEY_DUPLICATION);
     }
 
     @Test
     public void 계정정보() throws Exception {
         //given
-        given(loadAccountService.findById(any(Long.class))).willReturn(signUpDto.toEntity());
+        given(accountService.findById(any(Long.class))).willReturn(signUpDto.toEntity());
 
         //when
         var result = requestGetAccount();
@@ -135,34 +122,30 @@ public class AccountControllerTest {
         //then
         result
                 .andExpect(status().isOk());
-        assertEqualProperties(result, signUpDto.toEntity());
+        assertEqualAccount(result, signUpDto.toEntity());
     }
 
     @Test
     public void 주소_수정() throws Exception {
         //given
-        var dto = buildUpdateRequest();
+        var dto = buildAccountUpdateRequest();
         var account = Account.builder()
                 .email(Email.builder().address("sign_up@dto.com").build())
                 .address(dto.getAddress())
-                .detailAddress(dto.getDetailAddress())
-                .zipCode(dto.getZipCode())
                 .build();
-        given(updateAccountService.updateAddress(any(Long.class), any(AccountDto.UpdateAddressRequest.class))).willReturn(account);
+        given(accountService.updateAddress(any(Long.class), any(AccountDto.UpdateAddressRequest.class))).willReturn(account);
 
         //when
         var result = requestAddressUpdate(dto);
 
         //then
         result
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.address", is(dto.getAddress())))
-                .andExpect(jsonPath("$.detailAddress", is(dto.getDetailAddress())))
-                .andExpect(jsonPath("$.zipCode", is(dto.getZipCode())));
+                .andExpect(status().isOk());
+        assertEqualAddress(result, dto.getAddress());
     }
 
     private ResultActions requestSignUp(AccountDto.SignUpRequest dto) throws Exception {
-        return mvc.perform(post("/account")
+        return mvc.perform(post("/accounts")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(dto)))
                 .andDo(print());

@@ -1,14 +1,14 @@
 package io.joonak.account.dto;
 
 import io.joonak.account.domain.Account;
+import io.joonak.account.domain.Address;
 import io.joonak.account.domain.Email;
 import io.joonak.account.domain.Password;
+import io.joonak.common.domain.DateInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.StringUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -27,22 +27,16 @@ public class AccountDto {
         private String lastName;
         @NotEmpty
         private String password;
-        @NotEmpty
-        private String address;
-        @NotEmpty
-        private String detailAddress;
-        @NotEmpty
-        private String zipCode;
+        @Valid
+        private Address address;
 
         @Builder
-        public SignUpRequest(Email email, String firstName, String lastName, String password, String address, String detailAddress, String zipCode) {
+        public SignUpRequest(Email email, String firstName, String lastName, String password, Address address) {
             this.email = email;
             this.firstName = firstName;
             this.lastName = lastName;
             this.password = password;
             this.address = address;
-            this.detailAddress = detailAddress;
-            this.zipCode = zipCode;
         }
 
         public Account toEntity() {
@@ -52,8 +46,6 @@ public class AccountDto {
                     .lastName(this.lastName)
                     .password(Password.builder().value(this.password).build())
                     .address(this.address)
-                    .detailAddress(this.detailAddress)
-                    .zipCode(this.zipCode)
                     .build();
         }
     }
@@ -61,15 +53,11 @@ public class AccountDto {
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class UpdateAddressRequest {
-        private String address;
-        private String detailAddress;
-        private String zipCode;
+        private Address address;
 
         @Builder
-        public UpdateAddressRequest(String address, String detailAddress, String zipCode) {
+        public UpdateAddressRequest(Address address) {
             this.address = address;
-            this.detailAddress = detailAddress;
-            this.zipCode = zipCode;
         }
     }
 
@@ -78,21 +66,15 @@ public class AccountDto {
         private String email;
         private String firstName;
         private String lastName;
-        private String address;
-        private String detailAddress;
-        private String zipCode;
-        private LocalDateTime updatedAt;
-        private LocalDateTime createdAt;
+        private Address address;
+        private DateInfo dateInfo;
 
         public Response(Account account) {
             this.email = account.getEmail().getAddress();
             this.firstName = account.getFirstName();
             this.lastName = account.getLastName();
             this.address = account.getAddress();
-            this.detailAddress = account.getDetailAddress();
-            this.zipCode = account.getZipCode();
-            this.updatedAt = account.getUpdatedAt();
-            this.createdAt = account.getCreatedAt();
+            this.dateInfo = account.getDateInfo();
         }
     }
 

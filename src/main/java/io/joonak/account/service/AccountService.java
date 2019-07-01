@@ -3,6 +3,7 @@ package io.joonak.account.service;
 import io.joonak.account.domain.Account;
 import io.joonak.account.domain.Email;
 import io.joonak.account.dto.AccountDto;
+import io.joonak.account.exception.AccountNotFoundException;
 import io.joonak.account.exception.EmailDuplicationException;
 import io.joonak.account.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +11,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
-public class SaveAccountService {
+public class AccountService {
 
     private final AccountRepository accountRepository;
+
+    @Transactional(readOnly = true)
+    public Account findById(Long id) {
+        return accountRepository
+                .findById(id)
+                .orElseThrow(() -> new AccountNotFoundException(id));
+    }
 
     public Account create(AccountDto.SignUpRequest dto) {
         if (isExistedEmail(dto.getEmail()))
@@ -25,6 +32,14 @@ public class SaveAccountService {
     @Transactional(readOnly = true)
     public boolean isExistedEmail(Email email) {
         return accountRepository.existsByEmail(email);
+    }
+
+    public Account updateAddress(Long id, AccountDto.UpdateAddressRequest dto) {
+        final Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new AccountNotFoundException(id));
+        account.updateAddress(dto);
+        System.out.println(account);
+        return account;
     }
 
 }
