@@ -16,6 +16,12 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
 
+    public Account create(AccountDto.SignUpRequest dto) {
+        if (isExistedEmail(dto.getEmail()))
+            throw new EmailDuplicationException(dto.getEmail());
+        return accountRepository.save(dto.toEntity());
+    }
+
     @Transactional(readOnly = true)
     public Account findById(Long id) {
         return accountRepository
@@ -23,10 +29,10 @@ public class AccountService {
                 .orElseThrow(() -> new AccountNotFoundException(id));
     }
 
-    public Account create(AccountDto.SignUpRequest dto) {
-        if (isExistedEmail(dto.getEmail()))
-            throw new EmailDuplicationException(dto.getEmail());
-        return accountRepository.save(dto.toEntity());
+    public Account findByEmail(Email email) {
+        return accountRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new AccountNotFoundException(email));
     }
 
     @Transactional(readOnly = true)
@@ -38,7 +44,6 @@ public class AccountService {
         final Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new AccountNotFoundException(id));
         account.updateAddress(dto);
-        System.out.println(account);
         return account;
     }
 

@@ -11,6 +11,7 @@ public class AppTests {
 
     @Test
     public void contextLoads() {
+        App.main(new String[]{});
     }
 
 }

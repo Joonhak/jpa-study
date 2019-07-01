@@ -5,7 +5,9 @@ import io.joonak.account.domain.Address;
 import io.joonak.delivery.api.DeliveryController;
 import io.joonak.delivery.domain.DeliveryStatus;
 import io.joonak.delivery.dto.DeliveryDto;
+import io.joonak.delivery.exception.DeliveryAlreadyCompletedException;
 import io.joonak.delivery.exception.DeliveryNotFoundException;
+import io.joonak.delivery.exception.DeliveryStatusEqualsException;
 import io.joonak.delivery.service.DeliveryService;
 import io.joonak.error.ErrorCode;
 import io.joonak.error.ErrorHandler;
@@ -20,11 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static io.joonak.delivery.domain.DeliveryStatus.DELIVERING;
 import static io.joonak.utils.TestUtils.*;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -104,12 +105,9 @@ public class DeliveryControllerTest {
     @Test
     public void 배송상태_업데이트() throws Exception {
         // given
-        var updateDto = buildDeliveryUpdateRequest();
         var delivery = dto.toEntity();
-        delivery.addLog(updateDto.getStatus());
+        delivery.addLog(DELIVERING);
 
-        given(deliveryService.findById(any(Long.class)))
-                .willReturn(delivery);
         given(deliveryService.updateDelivery(any(Long.class), any(DeliveryStatus.class)))
                 .willReturn(delivery);
 
@@ -119,8 +117,44 @@ public class DeliveryControllerTest {
         // then
         result
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.logs.[0].log.status", is(updateDto.getStatus().name())));
+                .andExpect(jsonPath("$.logs.[0].log.status", is(DELIVERING.name())));
         assertEqualAddress(result, dto.getAddress());
+    }
+
+    @Test
+    public void 같은_상태로_업데이트() throws Exception {
+        // given
+        var delivery = dto.toEntity();
+        delivery.addLog(DELIVERING);
+
+        given(deliveryService.updateDelivery(any(Long.class), any(DeliveryStatus.class)))
+                .willThrow(DeliveryStatusEqualsException.class);
+
+        // when
+        var result = requestUpdateDelivery();
+
+        // then
+        result
+                .andExpect(status().isBadRequest());
+        assertEqualErrorMessage(result, ErrorCode.DELIVERY_STATUS_EQUALS);
+    }
+
+    @Test
+    public void 완료된_배송정보_업데이트() throws Exception {
+        // given
+        var delivery = dto.toEntity();
+        delivery.addLog(DELIVERING);
+
+        given(deliveryService.updateDelivery(any(Long.class), any(DeliveryStatus.class)))
+                .willThrow(DeliveryAlreadyCompletedException.class);
+
+        // when
+        var result = requestUpdateDelivery();
+
+        // then
+        result
+                .andExpect(status().isBadRequest());
+        assertEqualErrorMessage(result, ErrorCode.DELIVERY_ALREADY_COMPLETED);
     }
 
     private ResultActions requestCreateDelivery() throws Exception {
@@ -139,7 +173,8 @@ public class DeliveryControllerTest {
     private ResultActions requestUpdateDelivery() throws Exception {
         return mvc.perform(post("/deliveries/1")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(mapper.writeValueAsString(DeliveryStatus.DELIVERING)))
+                .characterEncoding("UTF-8")
+                .content(mapper.writeValueAsString(DELIVERING)))
                 .andDo(print());
     }
 }

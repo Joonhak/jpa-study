@@ -2,6 +2,7 @@ package io.joonak.delivery;
 
 import io.joonak.account.domain.Address;
 import io.joonak.delivery.domain.Delivery;
+import io.joonak.delivery.domain.DeliveryStatus;
 import io.joonak.delivery.dto.DeliveryDto;
 import io.joonak.delivery.exception.DeliveryNotFoundException;
 import io.joonak.delivery.repository.DeliveryRepository;
@@ -48,7 +49,7 @@ public class DeliveryServiceTest {
     @Test
     public void 배송상태_업데이트() {
         // given
-        var updateDto = buildDeliveryUpdateRequest();
+        var updateDto = buildDeliveryUpdateRequest(DeliveryStatus.DELIVERING);
 
         given(deliveryRepository.findById(any(Long.class)))
                 .willReturn(Optional.of(dto.toEntity()));

@@ -1,5 +1,6 @@
 package io.joonak.account.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import javax.persistence.Embeddable;
 
 @Getter
 @Embeddable
+@JsonIgnoreProperties({"host", "id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Email {
 
@@ -21,4 +23,15 @@ public class Email {
     public Email(String address) {
         this.address = address;
     }
+
+    public String getHost() {
+        var index = address.indexOf("@");
+        return this.address.substring(index  + 1);
+    }
+
+    public String getId() {
+        var index = address.indexOf("@");
+        return this.address.substring(0, index);
+    }
+
 }

@@ -1,5 +1,6 @@
 package io.joonak.delivery.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.joonak.common.domain.DateInfo;
 import io.joonak.delivery.exception.DeliveryAlreadyCompletedException;
@@ -10,9 +11,9 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Getter
-@ToString
+@Getter @ToString(exclude = "delivery")
 @Table(name = "delivery_log")
+@JsonIgnoreProperties({"lastStatus"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DeliveryLog {
 

@@ -3,6 +3,7 @@ package io.joonak.account;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.joonak.account.api.AccountController;
 import io.joonak.account.domain.Account;
+import io.joonak.account.domain.Address;
 import io.joonak.account.domain.Email;
 import io.joonak.account.dto.AccountDto;
 import io.joonak.account.exception.EmailDuplicationException;
@@ -23,6 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static io.joonak.utils.TestUtils.*;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -43,7 +45,7 @@ public class AccountControllerTest {
 
     private MockMvc mvc;
 
-    private AccountDto.SignUpRequest signUpDto = buildSignUpRequest(Email.builder().address("sign_up@dto.com").build());
+    private AccountDto.SignUpRequest signUpDto = buildSignUpRequest(buildEmail());
 
     @Before
     public void setUp() {
@@ -78,8 +80,8 @@ public class AccountControllerTest {
         //then
         result
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].field", is("email.address")))
-                .andExpect(jsonPath("$.errors[0].value", is(dto.getEmail().getAddress())));
+                .andExpect(jsonPath("$.errors.[0].field", is("email.address")))
+                .andExpect(jsonPath("$.errors.[0].value", is(dto.getEmail().getAddress())));
         assertEqualErrorMessage(result, ErrorCode.INPUT_VALUE_INVALID);
     }
 
@@ -112,7 +114,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void 계정정보() throws Exception {
+    public void 계정정보_아이디() throws Exception {
         //given
         given(accountService.findById(any(Long.class))).willReturn(signUpDto.toEntity());
 
@@ -126,11 +128,40 @@ public class AccountControllerTest {
     }
 
     @Test
+    public void 계정정보_이메일() throws Exception {
+        //given
+        given(accountService.findByEmail(any(Email.class))).willReturn(signUpDto.toEntity());
+
+        //when
+        var result = requestGetAccountByEmail(signUpDto.getEmail().getAddress());
+
+        //then
+        result
+                .andExpect(status().isOk());
+        assertEqualAccount(result, signUpDto.toEntity());
+    }
+
+    @Test
+    public void 계정정보_유효하지_않은_이메일() throws Exception {
+        //given
+
+        //when
+        var result = requestGetAccountByEmail("invalid.com");
+
+        //then
+        result
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.[0].field", is("address")))
+                .andExpect(jsonPath("$.errors.[0].value", is("invalid.com")));
+        assertEqualErrorMessage(result, ErrorCode.INPUT_VALUE_INVALID);
+    }
+
+    @Test
     public void 주소_수정() throws Exception {
         //given
         var dto = buildAccountUpdateRequest();
         var account = Account.builder()
-                .email(Email.builder().address("sign_up@dto.com").build())
+                .email(buildEmail())
                 .address(dto.getAddress())
                 .build();
         given(accountService.updateAddress(any(Long.class), any(AccountDto.UpdateAddressRequest.class))).willReturn(account);
@@ -144,6 +175,27 @@ public class AccountControllerTest {
         assertEqualAddress(result, dto.getAddress());
     }
 
+    @Test
+    public void 주소_수정_실패() throws Exception {
+        //given
+        var dto = AccountDto.UpdateAddressRequest.builder()
+                .address(Address.builder()
+                        .address("no-zip-code")
+                        .detailAddres("no-zip-code")
+                        .build())
+                .build();
+
+        //when
+        var result = requestAddressUpdate(dto);
+
+        //then
+        result
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.[0].field", is("address.zipCode")))
+                .andExpect(jsonPath("$.errors.[0].value", is(nullValue())));
+        assertEqualErrorMessage(result, ErrorCode.INPUT_VALUE_INVALID);
+    }
+
     private ResultActions requestSignUp(AccountDto.SignUpRequest dto) throws Exception {
         return mvc.perform(post("/accounts")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -153,6 +205,12 @@ public class AccountControllerTest {
 
     private ResultActions requestGetAccount() throws Exception {
         return mvc.perform(get("/accounts/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+    }
+
+    private ResultActions requestGetAccountByEmail(String email) throws Exception {
+        return mvc.perform(get("/accounts?email=" + email)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print());
     }

@@ -7,27 +7,27 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Address {
 
-    @NotEmpty
+    @NotBlank
     @Column(name = "address", nullable = false)
     private String address;
 
-    @NotEmpty
+    @NotBlank
     @Column(name = "detail_address", nullable = false)
     private String detailAddress;
 
-    @NotEmpty
+    @NotBlank
     @Column(name = "zip_code", nullable = false)
     private String zipCode;
 
     @Builder
-    public Address(@NotEmpty String address, @NotEmpty String detailAddres, @NotEmpty String zipCode) {
+    public Address(String address, String detailAddres, String zipCode) {
         this.address = address;
         this.detailAddress = detailAddres;
         this.zipCode = zipCode;
