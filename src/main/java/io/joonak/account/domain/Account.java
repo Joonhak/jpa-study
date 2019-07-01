@@ -1,6 +1,7 @@
 package io.joonak.account.domain;
 
 import io.joonak.account.dto.AccountDto;
+import io.joonak.common.domain.DateInfo;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -8,8 +9,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -34,38 +33,23 @@ public class Account implements Serializable {
     @Embedded
     private Password password;
 
-    @Column(name = "address", nullable = false)
-    private String address;
+    @Embedded
+    private Address address;
 
-    @Column(name = "detail_address", nullable = false)
-    private String detailAddress;
-
-    @Column(name = "zip_code", nullable = false)
-    private String zipCode;
-
-    @Column(name = "updated_at")
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    @Column(name = "created_at")
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+    @Embedded
+    private DateInfo dateInfo;
 
     @Builder
-    public Account(Email email, String firstName, String lastName, Password password, String address, String detailAddress, String zipCode) {
+    public Account(Email email, String firstName, String lastName, Password password, Address address) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.address = address;
-        this.detailAddress = detailAddress;
-        this.zipCode = zipCode;
     }
 
     public void updateAddress(AccountDto.UpdateAddressRequest dto) {
         this.address = dto.getAddress();
-        this.detailAddress = dto.getDetailAddress();
-        this.zipCode = dto.getZipCode();
     }
 
 }

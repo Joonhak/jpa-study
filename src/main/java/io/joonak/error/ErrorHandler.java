@@ -2,6 +2,7 @@ package io.joonak.error;
 
 import io.joonak.account.exception.AccountNotFoundException;
 import io.joonak.account.exception.EmailDuplicationException;
+import io.joonak.delivery.exception.DeliveryNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,14 @@ public class ErrorHandler {
         final var accountNotFound = ErrorCode.ACCOUNT_NOT_FOUND;
         log.error(accountNotFound.getMessage(), e.getId());
         return bindError(accountNotFound);
+    }
+
+    @ExceptionHandler(DeliveryNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ErrorResponse handleDeliveryNotFoundException(DeliveryNotFoundException e) {
+        final var deliveryNotFound = ErrorCode.DELIVERY_NOT_FOUND;
+        log.error(deliveryNotFound.getMessage(), e.getId());
+        return bindError(deliveryNotFound);
     }
 
     @ExceptionHandler(EmailDuplicationException.class)

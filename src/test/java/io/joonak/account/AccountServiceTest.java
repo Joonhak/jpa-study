@@ -1,26 +1,23 @@
 package io.joonak.account;
 
-import io.joonak.account.dto.AccountDto;
 import io.joonak.account.domain.Account;
 import io.joonak.account.domain.Email;
+import io.joonak.account.dto.AccountDto;
 import io.joonak.account.exception.AccountNotFoundException;
 import io.joonak.account.exception.EmailDuplicationException;
 import io.joonak.account.repository.AccountRepository;
-import io.joonak.account.service.LoadAccountService;
-import io.joonak.account.service.SaveAccountService;
-import io.joonak.account.service.UpdateAccountService;
+import io.joonak.account.service.AccountService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
-import static io.joonak.account.AccountTestUtils.*;
+import static io.joonak.utils.TestUtils.*;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
@@ -30,11 +27,7 @@ import static org.mockito.Mockito.verify;
 public class AccountServiceTest {
 
     @InjectMocks
-    private SaveAccountService saveAccountService;
-    @InjectMocks
-    private UpdateAccountService updateAccountService;
-    @InjectMocks
-    private LoadAccountService loadAccountService;
+    private AccountService accountService;
 
     @Mock
     private AccountRepository accountRepository;
@@ -47,12 +40,12 @@ public class AccountServiceTest {
         given(accountRepository.save(any(Account.class))).willReturn(signUpDto.toEntity());
 
         //when
-        var account = saveAccountService.create(signUpDto);
+        var account = accountService.create(signUpDto);
 
         //then
         verify(accountRepository, atLeastOnce()).save(any(Account.class));
 
-        assertEqualProperties(signUpDto, account);
+        assertEqualAccount(signUpDto, account);
     }
 
     @Test(expected = EmailDuplicationException.class)
@@ -61,7 +54,7 @@ public class AccountServiceTest {
         given(accountRepository.existsByEmail(any(Email.class))).willReturn(true);
 
         //when
-        var account = saveAccountService.create(signUpDto);
+        var account = accountService.create(signUpDto);
 
         //then
         assertThat(account, is(Optional.empty()));
@@ -73,12 +66,12 @@ public class AccountServiceTest {
         given(accountRepository.findById(any(Long.class))).willReturn(Optional.of(signUpDto.toEntity()));
 
         //when
-        var account = loadAccountService.findById(any(Long.class));
+        var account = accountService.findById(any(Long.class));
 
         //then
         verify(accountRepository, atLeastOnce()).findById(any(Long.class));
 
-        assertEqualProperties(signUpDto, account);
+        assertEqualAccount(signUpDto, account);
     }
 
     @Test(expected = AccountNotFoundException.class)
@@ -87,7 +80,7 @@ public class AccountServiceTest {
         given(accountRepository.findById(any(Long.class))).willReturn(Optional.empty());
 
         //when
-        var account = loadAccountService.findById(any(Long.class));
+        var account = accountService.findById(any(Long.class));
 
         //then
         assertThat(account, is(Optional.empty()));
@@ -96,11 +89,11 @@ public class AccountServiceTest {
     @Test
     public void 주소_수정() {
         //given
-        var updateDto = buildUpdateRequest();
+        var updateDto = buildAccountUpdateRequest();
         given(accountRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(signUpDto.toEntity()));
 
         //when
-        var account = updateAccountService.updateAddress(any(Long.class), updateDto);
+        var account = accountService.updateAddress(any(Long.class), updateDto);
 
         //then
         assertEqualAddress(updateDto, account);
@@ -112,7 +105,7 @@ public class AccountServiceTest {
         given(accountRepository.existsByEmail(any())).willReturn(true);
 
         //when
-        var isExist = saveAccountService.isExistedEmail(any());
+        var isExist = accountService.isExistedEmail(any());
 
         //then
         assertThat(isExist, is(true));
