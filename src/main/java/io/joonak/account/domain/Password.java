@@ -35,6 +35,13 @@ public class Password {
         this.expirationDate = extendExpirationDate();
     }
 
+    public void changeValue(String oldValue, String newValue) {
+        if (isMatched(oldValue)) {
+            this.value = encode(newValue);
+            extendExpirationDate();
+        }
+    }
+
     public boolean isMatched(String password) {
         if (failedCount >= 5)
             throw new PasswordFailedExceededException();

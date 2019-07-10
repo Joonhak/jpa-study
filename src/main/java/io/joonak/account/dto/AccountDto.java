@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import java.time.LocalDateTime;
 
 public class AccountDto {
 
@@ -53,6 +52,7 @@ public class AccountDto {
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class UpdateAddressRequest {
+        @Valid
         private Address address;
 
         @Builder

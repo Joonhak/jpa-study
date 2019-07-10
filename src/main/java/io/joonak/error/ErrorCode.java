@@ -14,6 +14,8 @@ public enum ErrorCode {
 
     // Delivery
     DELIVERY_NOT_FOUND("DE-01", "배송정보를 찾을 수 없습니다.", 404),
+    DELIVERY_STATUS_EQUALS("DE-02", "같은 배송상태로 수정할 수 없습니다.", 400),
+    DELIVERY_ALREADY_COMPLETED("DE-03", "이미 완료된 배송정보입니다.", 400),
 
     // Validation
     INPUT_VALUE_INVALID("VE-01", "올바른 형식으로 입력해주세요.", 400),

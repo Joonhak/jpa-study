@@ -3,19 +3,15 @@ package io.joonak.account.domain;
 import io.joonak.account.dto.AccountDto;
 import io.joonak.common.domain.DateInfo;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@ToString
 @Table(name= "account")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Account implements Serializable {
+public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

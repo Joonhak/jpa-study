@@ -3,6 +3,7 @@ package io.joonak.utils;
 import io.joonak.account.domain.Account;
 import io.joonak.account.domain.Address;
 import io.joonak.account.domain.Email;
+import io.joonak.account.domain.Password;
 import io.joonak.account.dto.AccountDto;
 import io.joonak.delivery.domain.DeliveryStatus;
 import io.joonak.delivery.dto.DeliveryDto;
@@ -76,6 +77,12 @@ public class TestUtils {
                 .andExpect(jsonPath("$.status", is(errorCode.getStatus())));
     }
 
+    public static Email buildEmail() {
+        return Email.builder()
+                .address("sign_up@dto.com")
+                .build();
+    }
+
     public static Address buildAddress() {
         return Address.builder()
                 .address("경기도")
@@ -92,15 +99,21 @@ public class TestUtils {
                 .build();
     }
 
+    public static Password buildPassword(String value) {
+        return Password.builder()
+                .value(value)
+                .build();
+    }
+
     public static DeliveryDto.CreationRequest buildDeliveryCreationRequest(Address address) {
         return DeliveryDto.CreationRequest.builder()
                 .address(address)
                 .build();
     }
 
-    public static DeliveryDto.UpdateRequest buildDeliveryUpdateRequest() {
+    public static DeliveryDto.UpdateRequest buildDeliveryUpdateRequest(DeliveryStatus status) {
         return DeliveryDto.UpdateRequest.builder()
-                .status(DeliveryStatus.DELIVERING)
+                .status(status)
                 .build();
     }
 

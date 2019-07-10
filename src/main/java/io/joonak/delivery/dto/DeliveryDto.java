@@ -46,12 +46,15 @@ public class DeliveryDto {
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Response {
+        private Long id;
         private Address address;
+        private DateInfo dateInfo;
         private List<LogResponse> logs;
 
-        @Builder
         public Response(Delivery delivery) {
+            this.id = delivery.getId();
             this.address = delivery.getAddress();
+            this.dateInfo = delivery.getDateInfo();
             this.logs = delivery.getLogs()
                     .parallelStream()
                     .map(LogResponse::new)
@@ -63,11 +66,9 @@ public class DeliveryDto {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class LogResponse {
         private DeliveryLog log;
-        private DateInfo dateInfo;
 
         LogResponse(DeliveryLog log) {
             this.log = log;
-            this.dateInfo = log.getDateInfo();
         }
     }
 
