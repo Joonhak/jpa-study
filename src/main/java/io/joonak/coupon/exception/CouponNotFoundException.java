@@ -1,4 +1,11 @@
 package io.joonak.coupon.exception;
 
-public class CouponNotFoundException {
+import lombok.Getter;
+
+@Getter
+public class CouponNotFoundException extends RuntimeException {
+    private Long id;
+    public CouponNotFoundException(Long id) {
+        this.id = id;
+    }
 }

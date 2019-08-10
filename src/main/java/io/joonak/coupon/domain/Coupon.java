@@ -1,4 +1,4 @@
-package io.joonak.coupon;
+package io.joonak.coupon.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.joonak.order.domain.Order;

@@ -2,10 +2,12 @@ package io.joonak.account.domain;
 
 import io.joonak.account.dto.AccountDto;
 import io.joonak.common.domain.DateInfo;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
 @Getter

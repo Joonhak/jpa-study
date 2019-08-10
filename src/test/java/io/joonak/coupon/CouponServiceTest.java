@@ -1,4 +1,54 @@
 package io.joonak.coupon;
 
+import io.joonak.coupon.domain.Coupon;
+import io.joonak.coupon.exception.CouponNotFoundException;
+import io.joonak.coupon.repository.CouponRepository;
+import io.joonak.coupon.service.CouponService;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Optional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+
+@RunWith(MockitoJUnitRunner.class)
 public class CouponServiceTest {
+
+    @InjectMocks
+    private CouponService couponService;
+
+    @Mock
+    private CouponRepository couponRepository;
+
+    private Coupon coupon = Coupon.builder().discountAmount(1_000D).build();
+
+    @Test
+    public void 쿠폰_조회() {
+        // given
+        given(couponRepository.findById(anyLong()))
+                .willReturn(Optional.of(coupon));
+
+        // when
+        var result = couponService.findById(1L);
+
+        // then
+        assertThat(result.getDiscountAmount(), is(1_000D));
+    }
+
+    @Test(expected = CouponNotFoundException.class)
+    public void 없는_쿠폰_조회() {
+        // given
+        given(couponRepository.findById(anyLong()))
+                .willThrow(CouponNotFoundException.class);
+
+        // when
+        couponService.findById(1L);
+    }
+
 }

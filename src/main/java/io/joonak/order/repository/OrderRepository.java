@@ -1,4 +1,4 @@
-package io.joonak.order;
+package io.joonak.order.repository;
 
 import io.joonak.order.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;

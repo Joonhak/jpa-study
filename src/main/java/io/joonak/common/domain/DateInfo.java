@@ -16,11 +16,11 @@ import java.time.LocalDateTime;
 public class DateInfo {
 
     @CreatedDate
-    @Column(name = "createdAt", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "updatedAt")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
 }
