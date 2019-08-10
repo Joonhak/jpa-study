@@ -30,8 +30,8 @@ public class DeliveryController {
     }
 
     @PostMapping("/{id}")
-    public DeliveryDto.Response updateDelivery(@PathVariable final Long id, @RequestBody final DeliveryStatus status) {
-        return new DeliveryDto.Response(deliveryService.updateDelivery(id, status));
+    public DeliveryDto.Response updateDelivery(@PathVariable final Long id, @RequestBody final DeliveryDto.UpdateRequest dto) {
+        return new DeliveryDto.Response(deliveryService.updateDelivery(id, dto));
     }
 
 }

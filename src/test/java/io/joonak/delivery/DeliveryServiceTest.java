@@ -55,7 +55,7 @@ public class DeliveryServiceTest {
                 .willReturn(Optional.of(dto.toEntity()));
 
         // when
-        var result = deliveryService.updateDelivery(any(Long.class), updateDto.getStatus());
+        var result = deliveryService.updateDelivery(any(Long.class), updateDto);
 
         // then
         assertThat(result.getAddress(), is(address));

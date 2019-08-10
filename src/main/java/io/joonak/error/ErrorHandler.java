@@ -62,7 +62,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleDeliveryAlreayCompletedException(DeliveryAlreadyCompletedException e) {
         final var deliveryAlreayCompleted = ErrorCode.DELIVERY_ALREADY_COMPLETED;
-        log.error(deliveryAlreayCompleted.getMessage(), e.getId());
+        log.error(deliveryAlreayCompleted.getMessage());
         return bindError(deliveryAlreayCompleted);
     }
 
