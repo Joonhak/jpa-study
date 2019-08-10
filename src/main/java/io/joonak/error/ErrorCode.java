@@ -17,6 +17,12 @@ public enum ErrorCode {
     DELIVERY_STATUS_EQUALS("DE-02", "같은 배송상태로 수정할 수 없습니다.", 400),
     DELIVERY_ALREADY_COMPLETED("DE-03", "이미 완료된 배송정보입니다.", 400),
 
+    // Order
+    ORDER_NOT_FOUND("OE-01", "주문정보를 찾을 수 없습니다.", 404),
+
+    // Coupon
+    COUPON_NOT_FOUND("CE-01", "쿠폰정보를 찾을 수 없습니다.", 404),
+
     // Validation
     INPUT_VALUE_INVALID("VE-01", "올바른 형식으로 입력해주세요.", 400),
 

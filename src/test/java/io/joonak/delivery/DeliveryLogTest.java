@@ -50,10 +50,10 @@ public class DeliveryLogTest {
     @Test(expected = DeliveryAlreadyDeliveringException.class)
     public void 배송_시작_후_CANCEL() {
         final Delivery delivery = buildDelivery();
-        final DeliveryStatus status = DeliveryStatus.PENDING;
+        final DeliveryStatus status = DeliveryStatus.DELIVERING;
 
         delivery.getLogs().add(buildLog(delivery, status));
-        delivery.getLogs().add(buildLog(delivery, DeliveryStatus.DELIVERING));
+        delivery.getLogs().add(buildLog(delivery, DeliveryStatus.CANCELED));
     }
 
     @Test(expected = DeliveryAlreadyCompletedException.class)

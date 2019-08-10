@@ -77,7 +77,8 @@ public class DeliveryServiceTest {
     @Test(expected = DeliveryNotFoundException.class)
     public void 존재하지_않는_배송정보() {
         // given
-        given(deliveryRepository.findById(any(Long.class))).willThrow(DeliveryNotFoundException.class);
+        given(deliveryRepository.findById(any(Long.class)))
+                .willThrow(DeliveryNotFoundException.class);
 
         // when
         deliveryService.findById(any(Long.class));

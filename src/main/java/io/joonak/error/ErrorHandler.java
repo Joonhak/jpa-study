@@ -2,9 +2,11 @@ package io.joonak.error;
 
 import io.joonak.account.exception.AccountNotFoundException;
 import io.joonak.account.exception.EmailDuplicationException;
+import io.joonak.coupon.exception.CouponNotFoundException;
 import io.joonak.delivery.exception.DeliveryAlreadyCompletedException;
 import io.joonak.delivery.exception.DeliveryNotFoundException;
 import io.joonak.delivery.exception.DeliveryStatusEqualsException;
+import io.joonak.order.exception.OrderNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -61,16 +63,32 @@ public class ErrorHandler {
     @ExceptionHandler(DeliveryAlreadyCompletedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleDeliveryAlreayCompletedException(DeliveryAlreadyCompletedException e) {
-        final var deliveryAlreayCompleted = ErrorCode.DELIVERY_ALREADY_COMPLETED;
-        log.error(deliveryAlreayCompleted.getMessage());
-        return bindError(deliveryAlreayCompleted);
+        final var deliveryAlreadyCompleted = ErrorCode.DELIVERY_ALREADY_COMPLETED;
+        log.error(deliveryAlreadyCompleted.getMessage());
+        return bindError(deliveryAlreadyCompleted);
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ErrorResponse handleOrderNotFoundException(OrderNotFoundException e) {
+        final var orderNotFound = ErrorCode.ORDER_NOT_FOUND;
+        log.error(orderNotFound.getMessage(), e.getId());
+        return bindError(orderNotFound);
+    }
+
+    @ExceptionHandler(CouponNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ErrorResponse handleCouponNotFoundException(CouponNotFoundException e) {
+        final var couponNotFound = ErrorCode.COUPON_NOT_FOUND;
+        log.error(couponNotFound.getMessage(), e.getId());
+        return bindError(couponNotFound);
     }
 
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handelBindException(BindException e) {
         final var fieldErrors = getFieldErrors(e.getBindingResult());
-        return bindErrorWithFieldErrors(fieldErrors);
+        return bindErrorWithFieldErrors(ErrorCode.INPUT_VALUE_INVALID,fieldErrors);
     }
 
     // 유효하지 않은 SQL 및 Database 무결성 조건을 위반할 경우 발생하는 Exception을 Spring이 DataIntegrityViolationException 으로 변환시킨다.
@@ -85,17 +103,8 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error(e.getMessage());
-        final var bindingResult = e.getBindingResult();
-        final List<FieldError> errors = bindingResult.getFieldErrors();
-        return bindErrorWithFieldErrors(
-                errors.parallelStream()
-                        .map(err -> ErrorResponse.FieldError.builder()
-                                .field(err.getField())
-                                .value((String) err.getRejectedValue())
-                                .reason(err.getDefaultMessage())
-                                .build())
-                        .collect(toList())
-        );
+        final List<ErrorResponse.FieldError> errors = getFieldErrors(e.getBindingResult());
+        return bindErrorWithFieldErrors(ErrorCode.INPUT_VALUE_INVALID, errors);
     }
 
     private ErrorResponse bindError(ErrorCode errorCode) {
@@ -106,11 +115,11 @@ public class ErrorHandler {
                 .build();
     }
 
-    private ErrorResponse bindErrorWithFieldErrors(List<ErrorResponse.FieldError> errors) {
+    private ErrorResponse bindErrorWithFieldErrors(ErrorCode errorCode,List<ErrorResponse.FieldError> errors) {
         return ErrorResponse.builder()
-                .code(ErrorCode.INPUT_VALUE_INVALID.getCode())
-                .message(ErrorCode.INPUT_VALUE_INVALID.getMessage())
-                .status(ErrorCode.INPUT_VALUE_INVALID.getStatus())
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .status(errorCode.getStatus())
                 .errors(errors)
                 .build();
     }
