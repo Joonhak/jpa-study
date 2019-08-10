@@ -17,7 +17,8 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DeliveryLog {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)
@@ -58,7 +59,7 @@ public class DeliveryLog {
         if (isPending())
             this.status = DeliveryStatus.CANCELED;
         else
-            throw new DeliveryAlreadyDeliveringException(this.delivery.getId());
+            throw new DeliveryAlreadyDeliveringException();
     }
 
     private boolean isPending() {
@@ -76,7 +77,7 @@ public class DeliveryLog {
 
     private void verifyWithLastStatus(DeliveryStatus newStatus, DeliveryStatus lastStatus) {
         if (isCompleted())
-            throw new DeliveryAlreadyCompletedException(this.delivery.getId());
+            throw new DeliveryAlreadyCompletedException();
         if (newStatus == lastStatus)
             throw new DeliveryStatusEqualsException(newStatus);
     }

@@ -1,12 +1,9 @@
 package io.joonak.account.model;
 
-import io.joonak.account.domain.Password;
 import io.joonak.account.exception.PasswordFailedExceededException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 

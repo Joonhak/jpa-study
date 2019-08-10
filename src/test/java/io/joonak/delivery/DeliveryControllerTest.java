@@ -3,7 +3,6 @@ package io.joonak.delivery;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.joonak.account.domain.Address;
 import io.joonak.delivery.api.DeliveryController;
-import io.joonak.delivery.domain.DeliveryStatus;
 import io.joonak.delivery.dto.DeliveryDto;
 import io.joonak.delivery.exception.DeliveryAlreadyCompletedException;
 import io.joonak.delivery.exception.DeliveryNotFoundException;
@@ -108,7 +107,7 @@ public class DeliveryControllerTest {
         var delivery = dto.toEntity();
         delivery.addLog(DELIVERING);
 
-        given(deliveryService.updateDelivery(any(Long.class), any(DeliveryStatus.class)))
+        given(deliveryService.updateDelivery(any(Long.class), any(DeliveryDto.UpdateRequest.class)))
                 .willReturn(delivery);
 
         // when
@@ -127,7 +126,7 @@ public class DeliveryControllerTest {
         var delivery = dto.toEntity();
         delivery.addLog(DELIVERING);
 
-        given(deliveryService.updateDelivery(any(Long.class), any(DeliveryStatus.class)))
+        given(deliveryService.updateDelivery(any(Long.class), any(DeliveryDto.UpdateRequest.class)))
                 .willThrow(DeliveryStatusEqualsException.class);
 
         // when
@@ -145,7 +144,7 @@ public class DeliveryControllerTest {
         var delivery = dto.toEntity();
         delivery.addLog(DELIVERING);
 
-        given(deliveryService.updateDelivery(any(Long.class), any(DeliveryStatus.class)))
+        given(deliveryService.updateDelivery(any(Long.class), any(DeliveryDto.UpdateRequest.class)))
                 .willThrow(DeliveryAlreadyCompletedException.class);
 
         // when

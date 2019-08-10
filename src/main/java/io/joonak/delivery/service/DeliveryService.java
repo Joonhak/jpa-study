@@ -27,9 +27,10 @@ public class DeliveryService {
         return deliveryRepository.save(delivery);
     }
 
-    public Delivery updateDelivery(Long id, DeliveryStatus status) {
+    public Delivery updateDelivery(Long id, DeliveryDto.UpdateRequest dto) {
         var delivery = findById(id);
-        delivery.addLog(status);
+        delivery.addLog(dto.getStatus());
         return delivery;
     }
+
 }
