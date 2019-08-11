@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static io.joonak.delivery.domain.DeliveryStatus.DELIVERING;
+import static io.joonak.delivery.domain.DeliveryStatus.PENDING;
 import static io.joonak.utils.TestUtils.*;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -173,7 +174,7 @@ public class DeliveryControllerTest {
         return mvc.perform(post("/deliveries/1")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .characterEncoding("UTF-8")
-                .content(mapper.writeValueAsString(DELIVERING)))
+                .content(mapper.writeValueAsString(DeliveryDto.UpdateRequest.builder().status(DELIVERING).build())))
                 .andDo(print());
     }
 }
