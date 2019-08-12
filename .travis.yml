@@ -11,10 +11,14 @@ cache:
     - '$HOME/.m2/repository'
     - '$HOME/.gradle'
 
+services:
+  - mysql
+
 before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS jpa;'
   - chmod +x gradlew
 
-script: './gradlew clean build'
+script: './gradlew clean build -Dspring.profile.active=dev'
 
 after_success:
   - ./gradlew jacocoTestReport coveralls
