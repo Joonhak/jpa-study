@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static io.joonak.delivery.domain.DeliveryStatus.DELIVERING;
-import static io.joonak.delivery.domain.DeliveryStatus.PENDING;
 import static io.joonak.utils.TestUtils.*;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;

@@ -14,7 +14,7 @@ public class AccountNotFoundException extends RuntimeException {
     }
 
     public AccountNotFoundException(Email email) {
-        super("Can not found account for id: " + email.getAddress());
+        super("Can not found account for emil: " + email.getAddress());
         this.email = email;
     }
 }

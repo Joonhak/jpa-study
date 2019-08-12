@@ -1,6 +1,5 @@
 package io.joonak.delivery.api;
 
-import io.joonak.delivery.domain.DeliveryStatus;
 import io.joonak.delivery.dto.DeliveryDto;
 import io.joonak.delivery.service.DeliveryService;
 import lombok.RequiredArgsConstructor;

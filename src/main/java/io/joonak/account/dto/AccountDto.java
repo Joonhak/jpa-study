@@ -1,10 +1,10 @@
 package io.joonak.account.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.joonak.account.domain.Account;
 import io.joonak.account.domain.Address;
 import io.joonak.account.domain.Email;
 import io.joonak.account.domain.Password;
-import io.joonak.common.domain.DateInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
 
 public class AccountDto {
 
@@ -67,14 +68,12 @@ public class AccountDto {
         private String firstName;
         private String lastName;
         private Address address;
-        private DateInfo dateInfo;
 
         public Response(Account account) {
             this.email = account.getEmail().getAddress();
             this.firstName = account.getFirstName();
             this.lastName = account.getLastName();
             this.address = account.getAddress();
-            this.dateInfo = account.getDateInfo();
         }
     }
 

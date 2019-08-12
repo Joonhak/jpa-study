@@ -5,7 +5,10 @@ import io.joonak.common.domain.DateInfo;
 import io.joonak.delivery.domain.Delivery;
 import io.joonak.delivery.domain.DeliveryLog;
 import io.joonak.delivery.domain.DeliveryStatus;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import java.util.List;

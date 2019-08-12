@@ -6,7 +6,9 @@ import io.joonak.account.domain.Account;
 import io.joonak.account.domain.Address;
 import io.joonak.account.domain.Email;
 import io.joonak.account.dto.AccountDto;
+import io.joonak.account.dto.AccountSearchType;
 import io.joonak.account.exception.EmailDuplicationException;
+import io.joonak.account.service.AccountSearchService;
 import io.joonak.account.service.AccountService;
 import io.joonak.error.ErrorCode;
 import io.joonak.error.ErrorHandler;
@@ -40,6 +42,9 @@ public class AccountControllerTest {
 
     @Mock
     private AccountService accountService;
+
+    @Mock
+    private AccountSearchService accountSearchService;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -196,29 +201,74 @@ public class AccountControllerTest {
         assertEqualErrorMessage(result, ErrorCode.INPUT_VALUE_INVALID);
     }
 
-    private ResultActions requestSignUp(AccountDto.SignUpRequest dto) throws Exception {
-        return mvc.perform(post("/accounts")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(dto)))
-                .andDo(print());
+    @Test
+    public void 정상적인_계정_검색_요청() throws Exception {
+        // given
+        var size = 5;
+        var normal = buildPageAccount(size);
+        given(accountSearchService.search(any(AccountSearchType.class), any(String.class), any())).willReturn(normal);
+
+        // when
+        var result = requestGetAccounts(size);
+
+        // then
+        result
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("size", is(5)))
+                .andExpect(jsonPath("totalPages", is(4)));
+    }
+
+    @Test
+    public void 비정상적인_계정_검색_요청() throws Exception {
+        // given
+        var size = 500;
+        var abnormal = buildPageAccount(size);
+        given(accountSearchService.search(any(AccountSearchType.class), any(String.class), any())).willReturn(abnormal);
+
+        // when
+        var result = requestGetAccounts(size);
+
+        // then
+        result
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("size", is(10)))
+                .andExpect(jsonPath("totalPages", is(2)));
     }
 
     private ResultActions requestGetAccount() throws Exception {
         return mvc.perform(get("/accounts/1")
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print());
+    }
+
+    private ResultActions requestSignUp(AccountDto.SignUpRequest dto) throws Exception {
+        return mvc.perform(post("/accounts")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(mapper.writeValueAsString(dto)))
                 .andDo(print());
     }
 
     private ResultActions requestGetAccountByEmail(String email) throws Exception {
-        return mvc.perform(get("/accounts?email=" + email)
-                .contentType(MediaType.APPLICATION_JSON))
+        return mvc.perform(get("/accounts")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .param("email", email))
                 .andDo(print());
     }
 
     private ResultActions requestAddressUpdate(AccountDto.UpdateAddressRequest dto) throws Exception {
         return mvc.perform(patch("/accounts/1")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(mapper.writeValueAsString(dto)))
+                .andDo(print());
+    }
+
+    private ResultActions requestGetAccounts(int size) throws Exception {
+        return mvc.perform(get("/accounts/all")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .param("page", "0")
+                .param("size", "" + size)
+                .param("type", "EMAIL")
+                .param("value", "test001"))
                 .andDo(print());
     }
 

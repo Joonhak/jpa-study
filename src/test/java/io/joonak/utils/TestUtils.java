@@ -5,11 +5,16 @@ import io.joonak.account.domain.Address;
 import io.joonak.account.domain.Email;
 import io.joonak.account.domain.Password;
 import io.joonak.account.dto.AccountDto;
+import io.joonak.common.domain.PageRequest;
 import io.joonak.delivery.domain.DeliveryStatus;
 import io.joonak.delivery.dto.DeliveryDto;
 import io.joonak.error.ErrorCode;
 import org.junit.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.web.servlet.ResultActions;
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -38,6 +43,34 @@ public class TestUtils {
                 .password("qwerty")
                 .address(buildAddress())
                 .build();
+    }
+
+    public static List<Account> buildAccountList() {
+        var address = Address.builder().address("korea").detailAddres("seoul").zipCode("12345").build();
+        var password = Password.builder().value("test").build();
+        return List.of(
+                Account.builder()
+                        .email(Email.builder().address("test1@asd.com").build())
+                        .address(address)
+                        .firstName("first")
+                        .lastName("last")
+                        .password(password)
+                        .build(),
+                Account.builder()
+                        .email(Email.builder().address("test2@asd.com").build())
+                        .address(address)
+                        .firstName("first")
+                        .lastName("last")
+                        .password(password)
+                        .build()
+        );
+    }
+
+    public static Page<Account> buildPageAccount(int size) {
+        var pageRequest = new PageRequest();
+        pageRequest.setPage(0);
+        pageRequest.setSize(size);
+        return new PageImpl<>(buildAccountList(), pageRequest.of(), 20);
     }
 
     public static void assertEqualAccount(ResultActions result, Account account) throws Exception {
@@ -82,6 +115,12 @@ public class TestUtils {
                 .address("sign_up@dto.com")
                 .build();
     }
+
+    public static Email buildEmail(String address) {
+        return Email.builder()
+                .address(address)
+                .build();
+}
 
     public static Address buildAddress() {
         return Address.builder()

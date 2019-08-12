@@ -10,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
+
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AccountService {
 
@@ -29,11 +32,17 @@ public class AccountService {
                 .orElseThrow(() -> new AccountNotFoundException(id));
     }
 
-    public Account findByEmail(Email email) {
+    public Account findByEmail(@Valid Email email) {
         return accountRepository
                 .findByEmail(email)
                 .orElseThrow(() -> new AccountNotFoundException(email));
     }
+
+//    @Transactional(readOnly = true)
+//    public Page<Account> findAll(Pageable pageable) {
+//        return accountRepository
+//                .findAll(pageable);
+//    }
 
     @Transactional(readOnly = true)
     public boolean isExistedEmail(Email email) {
@@ -41,7 +50,7 @@ public class AccountService {
     }
 
     public Account updateAddress(Long id, AccountDto.UpdateAddressRequest dto) {
-        final Account account = accountRepository.findById(id)
+        final var account = accountRepository.findById(id)
                 .orElseThrow(() -> new AccountNotFoundException(id));
         account.updateAddress(dto);
         return account;

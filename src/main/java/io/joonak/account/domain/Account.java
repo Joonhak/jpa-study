@@ -1,13 +1,15 @@
 package io.joonak.account.domain;
 
 import io.joonak.account.dto.AccountDto;
-import io.joonak.common.domain.DateInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -34,8 +36,13 @@ public class Account {
     @Embedded
     private Address address;
 
-    @Embedded
-    private DateInfo dateInfo;
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "update_at")
+    private LocalDateTime updatedAt;
 
     @Builder
     public Account(Email email, String firstName, String lastName, Password password, Address address) {

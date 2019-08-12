@@ -2,14 +2,17 @@ package io.joonak.coupon.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.joonak.order.domain.Order;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @Table(name = "coupon")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Coupon {
 
     @Id
@@ -19,7 +22,7 @@ public class Coupon {
     @Column(name = "discount_amount")
     private Double discountAmount;
 
-    @Column(name = "use")
+    @Column(name = "is_used", columnDefinition = "tinyint(1)")
     private boolean use;
 
     @JsonIgnore
