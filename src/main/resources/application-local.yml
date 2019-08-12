@@ -5,8 +5,16 @@ spring:
     password: 1234
     data: classpath:data.sql
     initialization-mode: always
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
+    database: mysql
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
     hibernate:
       ddl-auto: create-drop
 
