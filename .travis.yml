@@ -11,10 +11,13 @@ cache:
     - '$HOME/.m2/repository'
     - '$HOME/.gradle'
 
+services:
+  - mysql
+
 before_install:
   - chmod +x gradlew
 
-script: './gradlew clean build'
+script: './gradlew clean build -Dspring.profile.active=dev'
 
 after_success:
   - ./gradlew jacocoTestReport coveralls
