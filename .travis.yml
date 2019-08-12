@@ -18,7 +18,7 @@ before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS jpa;'
   - chmod +x gradlew
 
-script: './gradlew clean build -Dspring.profile.active=dev'
+script: 'SPRING_PROFILES_ACTIVE=dev ./gradlew clean build'
 
 after_success:
   - ./gradlew jacocoTestReport coveralls
