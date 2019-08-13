@@ -5,10 +5,11 @@ import io.joonak.delivery.domain.DeliveryLog;
 import io.joonak.delivery.domain.DeliveryStatus;
 import io.joonak.delivery.exception.DeliveryAlreadyCompletedException;
 import io.joonak.delivery.exception.DeliveryAlreadyDeliveringException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DeliveryLogTest {
 
@@ -47,22 +48,22 @@ public class DeliveryLogTest {
         delivery.getLogs().add(buildLog(delivery, DeliveryStatus.COMPLETED));
     }
 
-    @Test(expected = DeliveryAlreadyDeliveringException.class)
+    @Test
     public void 배송_시작_후_CANCEL() {
         final Delivery delivery = buildDelivery();
         final DeliveryStatus status = DeliveryStatus.DELIVERING;
 
         delivery.getLogs().add(buildLog(delivery, status));
-        delivery.getLogs().add(buildLog(delivery, DeliveryStatus.CANCELED));
+        assertThrows(DeliveryAlreadyDeliveringException.class, () -> delivery.getLogs().add(buildLog(delivery, DeliveryStatus.CANCELED)));
     }
 
-    @Test(expected = DeliveryAlreadyCompletedException.class)
+    @Test
     public void 배송_완료_이후_변경() {
         final Delivery delivery = buildDelivery();
         final DeliveryStatus status = DeliveryStatus.COMPLETED;
 
         delivery.getLogs().add(buildLog(delivery, status));
-        delivery.getLogs().add(buildLog(delivery, DeliveryStatus.CANCELED));
+        assertThrows(DeliveryAlreadyCompletedException.class, () -> delivery.getLogs().add(buildLog(delivery, DeliveryStatus.CANCELED)));
     }
 
     private Delivery buildDelivery() {

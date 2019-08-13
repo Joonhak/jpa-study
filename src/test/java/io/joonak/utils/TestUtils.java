@@ -9,7 +9,7 @@ import io.joonak.common.domain.PageRequest;
 import io.joonak.delivery.domain.DeliveryStatus;
 import io.joonak.delivery.dto.DeliveryDto;
 import io.joonak.error.ErrorCode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.web.servlet.ResultActions;
@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 public class TestUtils {

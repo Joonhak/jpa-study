@@ -10,13 +10,13 @@ import io.joonak.delivery.exception.DeliveryStatusEqualsException;
 import io.joonak.delivery.service.DeliveryService;
 import io.joonak.error.ErrorCode;
 import io.joonak.error.ErrorHandler;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class DeliveryControllerTest {
 
     @InjectMocks
@@ -48,7 +48,7 @@ public class DeliveryControllerTest {
     private Address address = buildAddress();
     private DeliveryDto.CreationRequest dto = buildDeliveryCreationRequest(address);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         mvc = MockMvcBuilders
                 .standaloneSetup(deliveryController)

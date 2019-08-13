@@ -12,14 +12,15 @@ import io.joonak.account.service.AccountSearchService;
 import io.joonak.account.service.AccountService;
 import io.joonak.error.ErrorCode;
 import io.joonak.error.ErrorHandler;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -34,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class AccountControllerTest {
 
     @InjectMocks
@@ -52,7 +53,7 @@ public class AccountControllerTest {
 
     private AccountDto.SignUpRequest signUpDto = buildSignUpRequest(buildEmail());
 
-    @Before
+    @BeforeEach
     public void setUp() {
         mvc = MockMvcBuilders
                 .standaloneSetup(accountController)
@@ -250,7 +251,7 @@ public class AccountControllerTest {
 
     private ResultActions requestGetAccountByEmail(String email) throws Exception {
         return mvc.perform(get("/accounts")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.TEXT_PLAIN)
                 .param("email", email))
                 .andDo(print());
     }
@@ -264,7 +265,7 @@ public class AccountControllerTest {
 
     private ResultActions requestGetAccounts(int size) throws Exception {
         return mvc.perform(get("/accounts/all")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.TEXT_PLAIN)
                 .param("page", "0")
                 .param("size", "" + size)
                 .param("type", "EMAIL")
