@@ -7,23 +7,24 @@ import io.joonak.account.exception.AccountNotFoundException;
 import io.joonak.account.exception.EmailDuplicationException;
 import io.joonak.account.repository.AccountRepository;
 import io.joonak.account.service.AccountService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
 import static io.joonak.utils.TestUtils.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class AccountServiceTest {
 
     @InjectMocks
@@ -48,16 +49,15 @@ public class AccountServiceTest {
         assertEqualAccount(signUpDto, account);
     }
 
-    @Test(expected = EmailDuplicationException.class)
+    @Test
     public void 중복된_이메일의_회원가입() {
         //given
         given(accountRepository.existsByEmail(any(Email.class))).willReturn(true);
 
         //when
-        var account = accountService.create(signUpDto);
+        assertThrows(EmailDuplicationException.class, () -> accountService.create(signUpDto));
 
         //then
-        assertThat(account, is(Optional.empty()));
     }
 
     @Test
@@ -74,16 +74,15 @@ public class AccountServiceTest {
         assertEqualAccount(signUpDto, account);
     }
 
-    @Test(expected = AccountNotFoundException.class)
+    @Test
     public void 존재하지_않는_계정_아이디() {
         //given
         given(accountRepository.findById(any(Long.class))).willReturn(Optional.empty());
 
         //when
-        var account = accountService.findById(any(Long.class));
+        assertThrows(AccountNotFoundException.class, () -> accountService.findById(any(Long.class)));
 
         //then
-        assertThat(account, is(Optional.empty()));
     }
 
     @Test
@@ -101,16 +100,15 @@ public class AccountServiceTest {
         assertEqualAccount(signUpDto, account);
     }
 
-    @Test(expected = AccountNotFoundException.class)
+    @Test
     public void 존재하지_않는_계정_이메일() {
         //given
         given(accountRepository.findByEmail(any(Email.class))).willReturn(Optional.empty());
 
         //when
-        var account = accountService.findByEmail(buildEmail());
+        assertThrows(AccountNotFoundException.class, () -> accountService.findByEmail(buildEmail()));
 
         //then
-        assertThat(account, is(Optional.empty()));
     }
 
     @Test

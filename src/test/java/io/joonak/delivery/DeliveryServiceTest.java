@@ -7,21 +7,22 @@ import io.joonak.delivery.dto.DeliveryDto;
 import io.joonak.delivery.exception.DeliveryNotFoundException;
 import io.joonak.delivery.repository.DeliveryRepository;
 import io.joonak.delivery.service.DeliveryService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
 import static io.joonak.utils.TestUtils.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class DeliveryServiceTest {
 
     @InjectMocks
@@ -74,14 +75,14 @@ public class DeliveryServiceTest {
         assertThat(delivery.getAddress(), is(address));
     }
 
-    @Test(expected = DeliveryNotFoundException.class)
+    @Test
     public void 존재하지_않는_배송정보() {
         // given
         given(deliveryRepository.findById(any(Long.class)))
                 .willThrow(DeliveryNotFoundException.class);
 
         // when
-        deliveryService.findById(any(Long.class));
+        assertThrows(DeliveryNotFoundException.class, () -> deliveryService.findById(any(Long.class)));
 
         // then
         // throw exception

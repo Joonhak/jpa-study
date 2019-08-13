@@ -6,21 +6,22 @@ import io.joonak.order.domain.Order;
 import io.joonak.order.exception.OrderNotFoundException;
 import io.joonak.order.repository.OrderRepository;
 import io.joonak.order.service.OrderService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class OrderServiceTest {
 
     @InjectMocks
@@ -47,14 +48,17 @@ public class OrderServiceTest {
         assertThat(result.getPrice(), is(10_000D));
     }
 
-    @Test(expected = OrderNotFoundException.class)
+    @Test
     public void 존재하지_않는_주문() {
         // given
-        given(orderService.findById(anyLong()))
+        given(orderRepository.findById(any(Long.class)))
                 .willThrow(OrderNotFoundException.class);
 
         // when
-        orderService.findById(1L);
+        assertThrows(OrderNotFoundException.class, () -> orderService.findById(any(Long.class)));
+
+        // then
+        // throw exception
     }
 
     @Test

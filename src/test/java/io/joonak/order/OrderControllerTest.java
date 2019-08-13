@@ -7,13 +7,13 @@ import io.joonak.order.api.OrderController;
 import io.joonak.order.domain.Order;
 import io.joonak.order.exception.OrderNotFoundException;
 import io.joonak.order.service.OrderService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class OrderControllerTest {
 
     @InjectMocks
@@ -43,7 +43,7 @@ public class OrderControllerTest {
 
     private Order order = Order.builder().price(10_000D).build();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         mvc = MockMvcBuilders
                 .standaloneSetup(orderController)

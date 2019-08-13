@@ -1,17 +1,18 @@
 package io.joonak.account.model;
 
 import io.joonak.account.exception.PasswordFailedExceededException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 
 import static io.joonak.utils.TestUtils.buildPassword;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class PasswordTest {
 
 
@@ -53,7 +54,7 @@ public class PasswordTest {
         assertThat(password.getFailedCount(), is(3));
     }
 
-    @Test(expected = PasswordFailedExceededException.class)
+    @Test
     public void 비밀번호_5회_초과_실패시_EXCEPTION() {
         var password = buildPassword(passwordString);
 
@@ -62,7 +63,8 @@ public class PasswordTest {
         password.isMatched("invalid");
         password.isMatched("invalid");
         password.isMatched("invalid");
-        password.isMatched("invalid");
+
+        assertThrows(PasswordFailedExceededException.class, () -> password.isMatched("invalid"));
     }
 
     @Test
@@ -93,7 +95,7 @@ public class PasswordTest {
         assertThat(password.getValue().startsWith("{bcrypt}"), is(true));
     }
 
-    @Test(expected = PasswordFailedExceededException.class)
+    @Test
     public void 비밀번호_5회_틀리면_비밀번호_변경불가() {
         var password = buildPassword(passwordString);
         var newPasswordString = "new-password";
@@ -104,7 +106,7 @@ public class PasswordTest {
         password.isMatched("invalid");
         password.isMatched("invalid");
 
-        password.changeValue(passwordString, newPasswordString);
+        assertThrows(PasswordFailedExceededException.class, () -> password.changeValue(passwordString, newPasswordString));
     }
 
 }
