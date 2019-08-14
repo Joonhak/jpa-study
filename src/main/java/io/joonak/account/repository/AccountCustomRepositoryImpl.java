@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import java.util.List;
+
 public class AccountCustomRepositoryImpl extends QuerydslRepositorySupport implements AccountCustomRepository {
 
     public AccountCustomRepositoryImpl() {
@@ -42,4 +44,14 @@ public class AccountCustomRepositoryImpl extends QuerydslRepositorySupport imple
         final var accounts = getQuerydsl().applyPagination(pageable, query).fetch();
         return new PageImpl<>(accounts, pageable, query.fetchCount());
     }
+
+    @Override
+    public List<Account> findCurrentlyRegistered(int limit) {
+        final var account = QAccount.account;
+        return from(account)
+                .limit(limit)
+                .orderBy(account.createdAt.desc())
+                .fetch();
+    }
+
 }

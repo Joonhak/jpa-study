@@ -12,7 +12,6 @@ import io.joonak.account.service.AccountSearchService;
 import io.joonak.account.service.AccountService;
 import io.joonak.error.ErrorCode;
 import io.joonak.error.ErrorHandler;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
