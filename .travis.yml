@@ -21,7 +21,7 @@ before_install:
 script: 'SPRING_PROFILES_ACTIVE=dev ./gradlew clean build'
 
 after_success:
-  - ./gradlew jacocoTestReport coveralls
+  - ./gradlew jacocoTestReport coveralls -Djdk.tls.client.protocols="TLSv1,TLSv1.1,TLSv1.2"
 
 notifications:
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
