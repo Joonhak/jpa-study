@@ -7,6 +7,7 @@ import io.joonak.account.domain.Address;
 import io.joonak.account.domain.Email;
 import io.joonak.account.dto.AccountDto;
 import io.joonak.account.dto.AccountSearchType;
+import io.joonak.account.exception.AccountNotFoundException;
 import io.joonak.account.exception.EmailDuplicationException;
 import io.joonak.account.service.AccountSearchService;
 import io.joonak.account.service.AccountService;
@@ -63,7 +64,8 @@ public class AccountControllerTest {
     @Test
     public void 유효한_이메일의_회원가입() throws Exception {
         //given
-        given(accountService.create(any(AccountDto.SignUpRequest.class))).willReturn(signUpDto.toEntity());
+        given(accountService.create(any(AccountDto.SignUpRequest.class)))
+                .willReturn(signUpDto.toEntity());
 
         //when
         var result = requestSignUp(signUpDto);
@@ -93,7 +95,8 @@ public class AccountControllerTest {
     @Test
     public void 중복된_이메일의_회원가입() throws Exception {
         //given
-        given(accountService.create(any())).willThrow(EmailDuplicationException.class);
+        given(accountService.create(any()))
+                .willThrow(EmailDuplicationException.class);
 
         //when
         var result = requestSignUp(signUpDto);
@@ -107,7 +110,8 @@ public class AccountControllerTest {
     @Test
     public void 데이터_무결성_위반() throws Exception {
         //given
-        given(accountService.create(any())).willThrow(DataIntegrityViolationException.class);
+        given(accountService.create(any()))
+                .willThrow(DataIntegrityViolationException.class);
 
         //when
         var result = requestSignUp(signUpDto);
@@ -121,7 +125,8 @@ public class AccountControllerTest {
     @Test
     public void 계정정보_아이디() throws Exception {
         //given
-        given(accountService.findById(any(Long.class))).willReturn(signUpDto.toEntity());
+        given(accountService.findById(any(Long.class)))
+                .willReturn(signUpDto.toEntity());
 
         //when
         var result = requestGetAccount();
@@ -135,7 +140,8 @@ public class AccountControllerTest {
     @Test
     public void 계정정보_이메일() throws Exception {
         //given
-        given(accountService.findByEmail(any(Email.class))).willReturn(signUpDto.toEntity());
+        given(accountService.findByEmail(any(Email.class)))
+                .willReturn(signUpDto.toEntity());
 
         //when
         var result = requestGetAccountByEmail(signUpDto.getEmail().getAddress());
@@ -144,6 +150,21 @@ public class AccountControllerTest {
         result
                 .andExpect(status().isOk());
         assertEqualAccount(result, signUpDto.toEntity());
+    }
+
+    @Test
+    public void 존재하지_않는_계정() throws Exception {
+        //given
+        given(accountService.findById(any(Long.class)))
+                .willThrow(AccountNotFoundException.class);
+
+        //when
+        var result = requestGetAccount();
+
+        //then
+        result
+                .andExpect(status().isNotFound());
+        assertEqualErrorMessage(result, ErrorCode.ACCOUNT_NOT_FOUND);
     }
 
     @Test

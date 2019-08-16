@@ -46,7 +46,7 @@ public class CouponServiceTest {
     public void 없는_쿠폰_조회() {
         // given
         given(couponRepository.findById(anyLong()))
-                .willThrow(CouponNotFoundException.class);
+                .willReturn(Optional.empty());
 
         // when
         assertThrows(CouponNotFoundException.class, () -> couponService.findById(1L));

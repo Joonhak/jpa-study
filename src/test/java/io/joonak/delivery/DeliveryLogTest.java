@@ -1,24 +1,22 @@
 package io.joonak.delivery;
 
 import io.joonak.delivery.domain.Delivery;
-import io.joonak.delivery.domain.DeliveryLog;
 import io.joonak.delivery.domain.DeliveryStatus;
 import io.joonak.delivery.exception.DeliveryAlreadyCompletedException;
 import io.joonak.delivery.exception.DeliveryAlreadyDeliveringException;
+import io.joonak.delivery.exception.DeliveryStatusEqualsException;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DeliveryLogTest {
 
     @Test
     public void PENDING_로그_저장() {
+        final Delivery delivery = buildDelivery();
         final DeliveryStatus status = DeliveryStatus.PENDING;
-        final DeliveryLog log = buildLog(buildDelivery(), status);
 
-        assertThat(status, is(log.getStatus()));
+        delivery.addLog(status);
     }
 
     @Test
@@ -26,8 +24,8 @@ public class DeliveryLogTest {
         final Delivery delivery = buildDelivery();
         final DeliveryStatus status = DeliveryStatus.PENDING;
 
-        delivery.getLogs().add(buildLog(delivery, status));
-        delivery.getLogs().add(buildLog(delivery, DeliveryStatus.DELIVERING));
+        delivery.addLog(status);
+        delivery.addLog(DeliveryStatus.DELIVERING);
     }
 
     @Test
@@ -35,8 +33,8 @@ public class DeliveryLogTest {
         final Delivery delivery = buildDelivery();
         final DeliveryStatus status = DeliveryStatus.PENDING;
 
-        delivery.getLogs().add(buildLog(delivery, status));
-        delivery.getLogs().add(buildLog(delivery, DeliveryStatus.CANCELED));
+        delivery.addLog(status);
+        delivery.addLog(DeliveryStatus.CANCELED);
     }
 
     @Test
@@ -44,8 +42,8 @@ public class DeliveryLogTest {
         final Delivery delivery = buildDelivery();
         final DeliveryStatus status = DeliveryStatus.DELIVERING;
 
-        delivery.getLogs().add(buildLog(delivery, status));
-        delivery.getLogs().add(buildLog(delivery, DeliveryStatus.COMPLETED));
+        delivery.addLog(status);
+        delivery.addLog(DeliveryStatus.COMPLETED);
     }
 
     @Test
@@ -53,8 +51,8 @@ public class DeliveryLogTest {
         final Delivery delivery = buildDelivery();
         final DeliveryStatus status = DeliveryStatus.DELIVERING;
 
-        delivery.getLogs().add(buildLog(delivery, status));
-        assertThrows(DeliveryAlreadyDeliveringException.class, () -> delivery.getLogs().add(buildLog(delivery, DeliveryStatus.CANCELED)));
+        delivery.addLog(status);
+        assertThrows(DeliveryAlreadyDeliveringException.class, () -> delivery.addLog(DeliveryStatus.CANCELED));
     }
 
     @Test
@@ -62,20 +60,21 @@ public class DeliveryLogTest {
         final Delivery delivery = buildDelivery();
         final DeliveryStatus status = DeliveryStatus.COMPLETED;
 
-        delivery.getLogs().add(buildLog(delivery, status));
-        assertThrows(DeliveryAlreadyCompletedException.class, () -> delivery.getLogs().add(buildLog(delivery, DeliveryStatus.CANCELED)));
+        delivery.addLog(status);
+        assertThrows(DeliveryAlreadyCompletedException.class, () -> delivery.addLog(DeliveryStatus.CANCELED));
+    }
+
+    @Test
+    public void 같은_상태로_변경() {
+        final Delivery delivery = buildDelivery();
+        final DeliveryStatus status = DeliveryStatus.PENDING;
+
+        delivery.addLog(status);
+        assertThrows(DeliveryStatusEqualsException.class, () -> delivery.addLog(status));
     }
 
     private Delivery buildDelivery() {
         return Delivery.builder().build();
-    }
-
-    private DeliveryLog buildLog(Delivery delivery, DeliveryStatus status) {
-        return DeliveryLog.builder()
-                .delivery(delivery)
-                .status(status)
-                .build();
-
     }
 
 }

@@ -1,6 +1,5 @@
 package io.joonak.account.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.joonak.account.domain.Account;
 import io.joonak.account.domain.Address;
 import io.joonak.account.domain.Email;
@@ -12,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import java.time.LocalDateTime;
 
 public class AccountDto {
 
