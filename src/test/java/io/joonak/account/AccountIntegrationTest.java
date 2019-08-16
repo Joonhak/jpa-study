@@ -21,7 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-//@ActiveProfiles("local")
 public class AccountIntegrationTest {
 
     @Autowired
@@ -40,6 +39,15 @@ public class AccountIntegrationTest {
     @DisplayName("ACCOUNT_INTEGRATION 이메일로 계정 조회요청")
     public void getAccountsByEmail() throws Exception {
         var result = pageableRequest(AccountSearchType.EMAIL, "test01", 20);
+
+        result
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("ACCOUNT_INTEGRATION 모든 계정 요청")
+    public void getAllAccounts() throws Exception {
+        var result = pageableRequest(AccountSearchType.ALL, "", 20);
 
         result
                 .andExpect(status().isOk());

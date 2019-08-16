@@ -76,14 +76,6 @@ public class ErrorHandler {
         return bindError(orderNotFound);
     }
 
-    @ExceptionHandler(CouponNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected ErrorResponse handleCouponNotFoundException(CouponNotFoundException e) {
-        final var couponNotFound = ErrorCode.COUPON_NOT_FOUND;
-        log.error(couponNotFound.getMessage(), e.getId());
-        return bindError(couponNotFound);
-    }
-
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handelBindException(BindException e) {

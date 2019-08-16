@@ -38,7 +38,8 @@ public class AccountServiceTest {
     @Test
     public void 회원가입() {
         //given
-        given(accountRepository.save(any(Account.class))).willReturn(signUpDto.toEntity());
+        given(accountRepository.save(any(Account.class)))
+                .willReturn(signUpDto.toEntity());
 
         //when
         var account = accountService.create(signUpDto);
@@ -52,7 +53,8 @@ public class AccountServiceTest {
     @Test
     public void 중복된_이메일의_회원가입() {
         //given
-        given(accountRepository.existsByEmail(any(Email.class))).willReturn(true);
+        given(accountRepository.existsByEmail(any(Email.class)))
+                .willReturn(true);
 
         //when
         assertThrows(EmailDuplicationException.class, () -> accountService.create(signUpDto));
@@ -63,7 +65,8 @@ public class AccountServiceTest {
     @Test
     public void 존재하는_계정_아이디() {
         //given
-        given(accountRepository.findById(any(Long.class))).willReturn(Optional.of(signUpDto.toEntity()));
+        given(accountRepository.findById(any(Long.class)))
+                .willReturn(Optional.of(signUpDto.toEntity()));
 
         //when
         var account = accountService.findById(any(Long.class));
@@ -77,7 +80,8 @@ public class AccountServiceTest {
     @Test
     public void 존재하지_않는_계정_아이디() {
         //given
-        given(accountRepository.findById(any(Long.class))).willReturn(Optional.empty());
+        given(accountRepository.findById(any(Long.class)))
+                .willReturn(Optional.empty());
 
         //when
         assertThrows(AccountNotFoundException.class, () -> accountService.findById(any(Long.class)));
@@ -86,10 +90,11 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void 존재하는_계정_이메일() {
+    public void 존재하는_이메일() {
         //given
         var entity = signUpDto.toEntity();
-        given(accountRepository.findByEmail(any(Email.class))).willReturn(Optional.of(entity));
+        given(accountRepository.findByEmail(any(Email.class)))
+                .willReturn(Optional.of(entity));
 
         //when
         var account = accountService.findByEmail(entity.getEmail());
@@ -101,21 +106,21 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void 존재하지_않는_계정_이메일() {
+    public void 존재하지_않는_이메일() {
         //given
-        given(accountRepository.findByEmail(any(Email.class))).willReturn(Optional.empty());
+        given(accountRepository.findByEmail(any(Email.class)))
+                .willReturn(Optional.empty());
 
         //when
         assertThrows(AccountNotFoundException.class, () -> accountService.findByEmail(buildEmail()));
-
-        //then
     }
 
     @Test
     public void 주소_수정() {
         //given
         var updateDto = buildAccountUpdateRequest();
-        given(accountRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(signUpDto.toEntity()));
+        given(accountRepository.findById(any(Long.class)))
+                .willReturn(Optional.ofNullable(signUpDto.toEntity()));
 
         //when
         var account = accountService.updateAddress(any(Long.class), updateDto);
@@ -125,9 +130,10 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void 존재하는_이메일() {
+    public void 이메일이_존재하는_경우() {
         //given
-        given(accountRepository.existsByEmail(any())).willReturn(true);
+        given(accountRepository.existsByEmail(any()))
+                .willReturn(true);
 
         //when
         var isExist = accountService.isExistedEmail(any());

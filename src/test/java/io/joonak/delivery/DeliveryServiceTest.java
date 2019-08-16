@@ -66,7 +66,8 @@ public class DeliveryServiceTest {
     @Test
     public void 존재하는_배송정보() {
         // given
-        given(deliveryRepository.findById(any(Long.class))).willReturn(Optional.of(dto.toEntity()));
+        given(deliveryRepository.findById(any(Long.class)))
+                .willReturn(Optional.of(dto.toEntity()));
 
         // when
         var delivery = deliveryService.findById(any(Long.class));
@@ -79,13 +80,10 @@ public class DeliveryServiceTest {
     public void 존재하지_않는_배송정보() {
         // given
         given(deliveryRepository.findById(any(Long.class)))
-                .willThrow(DeliveryNotFoundException.class);
+                .willReturn(Optional.empty());
 
         // when
         assertThrows(DeliveryNotFoundException.class, () -> deliveryService.findById(any(Long.class)));
-
-        // then
-        // throw exception
     }
 
 }

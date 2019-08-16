@@ -52,7 +52,7 @@ public class OrderServiceTest {
     public void 존재하지_않는_주문() {
         // given
         given(orderRepository.findById(any(Long.class)))
-                .willThrow(OrderNotFoundException.class);
+                .willReturn(Optional.empty());
 
         // when
         assertThrows(OrderNotFoundException.class, () -> orderService.findById(any(Long.class)));

@@ -25,6 +25,7 @@ public class PasswordTest {
         assertThat(password.isExpiration(), is(false));
         assertThat(password.getFailedCount(), is(0));
         assertThat(password.getValue().startsWith("{bcrypt}"), is(true));
+        assertThat(password.getTimeToLive(), is(2_592_000L));
         assertThat(password.getExpirationDate().isAfter(LocalDateTime.now()), is(true));
     }
 
