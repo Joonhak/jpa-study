@@ -17,15 +17,15 @@ public class DeliveryController {
 
     private final DeliveryService deliveryService;
 
-    @GetMapping("/{id}")
-    public DeliveryDto.Response getDelivery(@PathVariable final Long id) {
-        return new DeliveryDto.Response(deliveryService.findById(id));
-    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public DeliveryDto.Response create(@RequestBody @Valid final DeliveryDto.CreationRequest dto) {
         return new DeliveryDto.Response(deliveryService.create(dto));
+    }
+
+    @GetMapping("/{id}")
+    public DeliveryDto.Response getDelivery(@PathVariable final Long id) {
+        return new DeliveryDto.Response(deliveryService.findById(id));
     }
 
     @PostMapping("/{id}")
